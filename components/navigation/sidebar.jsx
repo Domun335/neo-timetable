@@ -71,7 +71,7 @@ export function Sidebar({ listData, timetableUrl }) {
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col p-3">
-        <div className="shrink-0">
+        <div className="shrink-0 max-h-48 overflow-y-auto scrollbar-thin">
           <FavoritesList />
         </div>
 
@@ -111,7 +111,7 @@ export function Sidebar({ listData, timetableUrl }) {
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
             <TabsContent
               value="classes"
-              className="flex-1 min-h-0 h-full mt-0 overflow-hidden flex flex-col"
+              className="flex-1 min-h-0 h-full mt-0 mb-0 overflow-hidden flex flex-col"
             >
               <EntityList
                 items={listData?.classes || []}

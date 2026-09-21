@@ -49,13 +49,13 @@ export function CurrentLessonBadge({ hours, currentInfo: passedCurrentInfo }) {
     <Badge
       variant="outline"
       className={cn(
-        'h-auto cursor-default px-3 py-1.5 gap-2 rounded-full font-medium shadow-2xs transition-all',
+        'h-auto cursor-default px-2.5 sm:px-3 py-1 sm:py-1.5 gap-1.5 sm:gap-2 rounded-full font-medium text-xs shadow-2xs transition-all max-w-full truncate',
         color,
       )}
     >
       <span className={cn('size-2 rounded-full shrink-0', dot)} />
       <Icon className="size-3.5 shrink-0" />
-      <span className="font-semibold">{currentInfo.badgeText}</span>
+      <span className="font-semibold truncate">{currentInfo.badgeText}</span>
     </Badge>
   )
 }

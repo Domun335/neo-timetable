@@ -15,13 +15,19 @@ import { useCurrentLesson } from '@/hooks/use-current-lesson'
 import { useGroupPreferences } from '@/hooks/use-group-preferences'
 
 export function TimetableView({ timetable }) {
-  const { type, id, title, hours, availableGroups } = timetable
+  const { type, id, title, hours, availableGroups, subjectGroups = [] } = timetable
   const { isFavorite, toggleFavorite } = useFavorites()
   const { saveLastPath } = useLastPath()
   const currentInfo = useCurrentLesson(hours)
 
-  const { selectedGroups, setSelectedGroups, hideFiltered, toggleHideFiltered } =
-    useGroupPreferences(type, id)
+  const {
+    selectedGroups,
+    setSelectedGroups,
+    setBaseGroup,
+    setSubjectGroup,
+    clearSubjectOverride,
+    resetAllOverrides,
+  } = useGroupPreferences(type, id)
 
   useEffect(() => {
     saveLastPath(`/${type}/${id}`)
@@ -39,20 +45,20 @@ export function TimetableView({ timetable }) {
   const { label: typeLabel, icon: TypeIcon } = getTypeInfo()
 
   return (
-    <div className="flex flex-col gap-5 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 print:p-0 print:max-w-none print:gap-3">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60 print:pb-2 print:border-b-2 print:border-foreground/20">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-xs print:h-9 print:w-9 print:rounded-lg">
-            <TypeIcon className="h-6 w-6 print:h-5 print:w-5" />
+    <div className="flex flex-col gap-3 sm:gap-5 w-full max-w-[1600px] mx-auto p-3 sm:p-6 lg:p-8 print:p-0 print:max-w-none print:gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 pb-3 sm:pb-4 border-b border-border/60 print:pb-2 print:border-b-2 print:border-foreground/20">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex size-10 sm:size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary border border-primary/20 shadow-xs print:size-9 print:rounded-lg">
+            <TypeIcon className="size-5 sm:size-6 print:size-5" />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground print:text-lg">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground truncate print:text-lg">
                 {title}
               </h1>
 
-              <div className="no-print">
+              <div className="no-print shrink-0">
                 <Tooltip>
                   <TooltipTrigger
                     render={
@@ -60,7 +66,7 @@ export function TimetableView({ timetable }) {
                         variant="outline"
                         size="icon-sm"
                         onClick={() => toggleFavorite({ type, id, name: title })}
-                        className="rounded-xl border-border/60 bg-card hover:bg-muted text-muted-foreground transition-all hover:scale-105 active:scale-95"
+                        className="size-8 sm:size-8.5 rounded-xl border-border/60 bg-card hover:bg-muted text-muted-foreground transition-all hover:scale-105 active:scale-95 shadow-2xs"
                         aria-label="Przełącz ulubione"
                       />
                     }
@@ -80,29 +86,40 @@ export function TimetableView({ timetable }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground print:text-foreground/70">
-              <span className="font-medium text-foreground/80 print:text-foreground">
+            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground print:text-foreground/70">
+              <span className="font-semibold text-foreground/85 print:text-foreground">
                 {typeLabel}
               </span>
               <span>&bull;</span>
-              <span>{schoolConfig.semester ?? 'Semestr bieżący'}</span>
+              <span className="truncate">{schoolConfig.semester ?? 'Semestr bieżący'}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 no-print">
+        <div className="flex items-center gap-2 no-print self-start sm:self-auto">
           <CurrentLessonBadge hours={hours} currentInfo={currentInfo} />
         </div>
       </div>
 
-      {type === 'o' && availableGroups && (
-        <div className="no-print p-3 rounded-2xl bg-muted/40 border border-border/60">
+      {type === 'o' && (
+        (subjectGroups?.length || 0) > 0 ||
+        Math.max(
+          0,
+          ...(availableGroups?.general || []),
+          ...(availableGroups?.lang || []),
+          ...(availableGroups?.wf || []),
+        ) >= 2
+      ) && (
+        <div className="no-print">
           <GroupFilter
             availableGroups={availableGroups}
+            subjectGroups={subjectGroups}
             selectedGroups={selectedGroups}
             onChangeGroups={setSelectedGroups}
-            hideFiltered={hideFiltered}
-            onToggleHideFiltered={toggleHideFiltered}
+            onSetBaseGroup={setBaseGroup}
+            onSetSubjectGroup={setSubjectGroup}
+            onClearSubjectOverride={clearSubjectOverride}
+            onResetAllOverrides={resetAllOverrides}
           />
         </div>
       )}
@@ -112,7 +129,7 @@ export function TimetableView({ timetable }) {
           timetable={timetable}
           selectedGroups={selectedGroups}
           currentInfo={currentInfo}
-          hideFiltered={hideFiltered}
+          onSetSubjectGroup={type === 'o' ? setSubjectGroup : null}
         />
       </div>
 
@@ -121,7 +138,7 @@ export function TimetableView({ timetable }) {
           timetable={timetable}
           selectedGroups={selectedGroups}
           currentInfo={currentInfo}
-          hideFiltered={hideFiltered}
+          onSetSubjectGroup={type === 'o' ? setSubjectGroup : null}
         />
       </div>
     </div>

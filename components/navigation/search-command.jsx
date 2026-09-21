@@ -124,7 +124,7 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
       }}
       title="Wyszukiwarka planu lekcji"
       description="Wyszukaj klasę, nauczyciela lub salę"
-      className="border border-border/80 bg-card shadow-2xl rounded-2xl!"
+      className="border border-border/80 bg-card shadow-2xl rounded-2xl! max-sm:top-3 max-sm:max-w-[calc(100%-1rem)]"
     >
       <Command shouldFilter={false} className="rounded-2xl!">
         <CommandInput
@@ -134,8 +134,8 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
           className="text-sm sm:text-base"
         />
 
-        <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border/40 bg-muted/10 text-xs overflow-x-auto">
-          <span className="text-[11px] text-muted-foreground mr-1 hidden sm:inline">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 border-b border-border/40 bg-muted/10 text-xs overflow-x-auto scrollbar-none">
+          <span className="text-[11px] text-muted-foreground mr-1 hidden sm:inline shrink-0">
             Kategoria:
           </span>
           <ToggleGroup
@@ -145,24 +145,24 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
             }}
             variant="outline"
             size="sm"
-            className="gap-1 flex-wrap"
+            className="gap-1 flex-nowrap shrink-0"
           >
-            <ToggleGroupItem value="all" className="h-6 px-2 text-xs rounded-md">
+            <ToggleGroupItem value="all" className="h-6.5 px-2 text-xs rounded-md shrink-0">
               Wszystko
             </ToggleGroupItem>
-            <ToggleGroupItem value="o" className="h-6 px-2 text-xs rounded-md">
+            <ToggleGroupItem value="o" className="h-6.5 px-2 text-xs rounded-md shrink-0">
               Klasy ({listData?.classes?.length || 0})
             </ToggleGroupItem>
-            <ToggleGroupItem value="n" className="h-6 px-2 text-xs rounded-md">
+            <ToggleGroupItem value="n" className="h-6.5 px-2 text-xs rounded-md shrink-0">
               Nauczyciele ({listData?.teachers?.length || 0})
             </ToggleGroupItem>
-            <ToggleGroupItem value="s" className="h-6 px-2 text-xs rounded-md">
+            <ToggleGroupItem value="s" className="h-6.5 px-2 text-xs rounded-md shrink-0">
               Sale ({listData?.rooms?.length || 0})
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
 
-        <CommandList className="max-h-[50vh] p-2 divide-y divide-border/20">
+        <CommandList className="max-h-[60vh] sm:max-h-[50vh] p-2 divide-y divide-border/20">
           {filteredItems.length === 0 ? (
             <CommandEmpty className="py-12 text-center text-sm text-muted-foreground">
               {query ? (

@@ -18,7 +18,7 @@ export function EntityList({ items = [], type }) {
 
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
-      <ScrollArea className="flex-1 min-h-0 h-full pr-1">
+      <ScrollArea className="flex-1 min-h-0 h-full">
         {items.length === 0 ? (
           <Empty className="py-6 border-none">
             <EmptyHeader>
@@ -28,7 +28,7 @@ export function EntityList({ items = [], type }) {
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="space-y-0.5 pb-2">
+          <div className="space-y-1 pb-2 pr-3">
             {items.map((item) => {
               const isActive = currentType === type && String(currentId) === String(item.value)
               const fav = isFavorite(type, item.value)
@@ -37,18 +37,18 @@ export function EntityList({ items = [], type }) {
                 <div
                   key={item.value}
                   className={cn(
-                    'group flex items-center justify-between rounded-xl w-[97%] px-2.5 py-1.5 text-xs transition-all',
+                    'group flex items-center justify-between rounded-xl w-full px-3 py-2 sm:py-1.5 text-sm sm:text-xs transition-all active:scale-[0.99]',
                     isActive
                       ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-                      : 'text-foreground/80 hover:bg-muted/70 hover:text-foreground',
+                      : 'text-foreground/85 hover:bg-muted/70 hover:text-foreground active:bg-muted',
                   )}
                 >
                   <Link
                     href={`/${type}/${item.value}`}
-                    className="flex-1 truncate py-0.5"
+                    className="flex-1 truncate py-1 sm:py-0.5"
                     title={item.name}
                   >
-                    <span className="truncate">{item.name}</span>
+                    <span className="truncate font-medium">{item.name}</span>
                   </Link>
 
                   <Tooltip>
@@ -64,8 +64,10 @@ export function EntityList({ items = [], type }) {
                             toggleFavorite({ type, id: item.value, name: item.name })
                           }}
                           className={cn(
-                            'size-5 p-0 transition-opacity hover:bg-transparent',
-                            fav ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                            'size-7 sm:size-5 p-0 transition-opacity hover:bg-transparent shrink-0',
+                            fav
+                              ? 'opacity-100'
+                              : 'opacity-40 sm:opacity-0 group-hover:opacity-100 hover:opacity-100',
                           )}
                           aria-label={fav ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
                         />
@@ -73,13 +75,13 @@ export function EntityList({ items = [], type }) {
                     >
                       <Star
                         className={cn(
-                          'size-3.5',
+                          'size-4 sm:size-3.5',
                           fav
                             ? isActive
                               ? 'fill-amber-300 text-amber-300'
                               : 'fill-amber-400 text-amber-400'
                             : isActive
-                              ? 'text-primary-foreground/60 hover:text-primary-foreground'
+                              ? 'text-primary-foreground/70 hover:text-primary-foreground'
                               : 'text-muted-foreground hover:text-foreground',
                         )}
                       />

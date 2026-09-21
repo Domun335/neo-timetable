@@ -1,189 +1,327 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, useRef, useEffect, memo } from 'react'
 import { LessonCell } from './lesson-cell'
 import { useCurrentLesson } from '@/hooks/use-current-lesson'
-import { Coffee } from 'lucide-react'
+import { Coffee, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { isLessonVisible } from '@/lib/timetable/group-utils'
+import { cn } from '@/lib/utils'
 
-export const TimetableList = memo(function TimetableList({
-  timetable,
-  selectedGroups = null,
-  currentInfo: passedCurrentInfo,
-  hideFiltered = true,
-}) {
-  const { hours, dayNames, rawDays, type } = timetable
-  const hookCurrentInfo = useCurrentLesson(passedCurrentInfo ? null : hours)
-  const currentInfo = passedCurrentInfo || hookCurrentInfo
+function areGroupsEqual(prevGroups, nextGroups) {
+  if (prevGroups === nextGroups) return true
+  if (!prevGroups || !nextGroups) return false
+  if (prevGroups.base !== nextGroups.base) return false
 
-  const [userSelectedDayIndex, setUserSelectedDayIndex] = useState(null)
+  const prevSub = prevGroups.subjects || {}
+  const nextSub = nextGroups.subjects || {}
+  if (prevSub === nextSub) return true
 
-  const defaultDayIndex = (() => {
-    if (!currentInfo?.isMounted || !currentInfo?.isSchoolDay) {
-      return 0
+  const prevKeys = Object.keys(prevSub)
+  const nextKeys = Object.keys(nextSub)
+  if (prevKeys.length !== nextKeys.length) return false
+
+  for (const key of prevKeys) {
+    if (prevSub[key] !== nextSub[key]) return false
+  }
+  return true
+}
+
+export const TimetableList = memo(
+  function TimetableList({
+    timetable,
+    selectedGroups = null,
+    currentInfo: passedCurrentInfo,
+    onSetSubjectGroup = null,
+  }) {
+    const { hours, dayNames, rawDays, type } = timetable
+    const hookCurrentInfo = useCurrentLesson(passedCurrentInfo ? null : hours)
+    const currentInfo = passedCurrentInfo || hookCurrentInfo
+
+    const [userSelectedDayIndex, setUserSelectedDayIndex] = useState(null)
+    const currentLessonRef = useRef(null)
+    const touchStartX = useRef(0)
+    const touchStartY = useRef(0)
+
+    const defaultDayIndex = (() => {
+      if (!currentInfo?.isMounted || !currentInfo?.isSchoolDay) {
+        return 0
+      }
+      if (currentInfo.status === 'after_school') {
+        return currentInfo.currentDayIndex < 4 ? currentInfo.currentDayIndex + 1 : 0
+      }
+      return currentInfo.currentDayIndex >= 0 ? currentInfo.currentDayIndex : 0
+    })()
+
+    const selectedDayIndex =
+      userSelectedDayIndex !== null ? userSelectedDayIndex : defaultDayIndex
+
+    const sortedHourKeys = Object.keys(hours || {}).sort((a, b) => Number(a) - Number(b))
+    const shortDayNames = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt']
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        if (
+          currentInfo?.isSchoolDay &&
+          currentInfo?.currentDayIndex === selectedDayIndex &&
+          currentLessonRef.current
+        ) {
+          currentLessonRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          })
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }, [selectedDayIndex, currentInfo?.isSchoolDay, currentInfo?.currentDayIndex])
+
+    const handleTouchStart = (e) => {
+      touchStartX.current = e.touches[0].clientX
+      touchStartY.current = e.touches[0].clientY
     }
-    if (currentInfo.status === 'after_school') {
-      return currentInfo.currentDayIndex < 4 ? currentInfo.currentDayIndex + 1 : 0
+
+    const handleTouchEnd = (e) => {
+      const deltaX = e.changedTouches[0].clientX - touchStartX.current
+      const deltaY = e.changedTouches[0].clientY - touchStartY.current
+
+      if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+        if (deltaX < 0 && selectedDayIndex < 4) {
+          setUserSelectedDayIndex(selectedDayIndex + 1)
+        } else if (deltaX > 0 && selectedDayIndex > 0) {
+          setUserSelectedDayIndex(selectedDayIndex - 1)
+        }
+      }
     }
-    return currentInfo.currentDayIndex >= 0 ? currentInfo.currentDayIndex : 0
-  })()
 
-  const selectedDayIndex = userSelectedDayIndex !== null ? userSelectedDayIndex : defaultDayIndex
+    const isLessonActive = (lesson) => isLessonVisible(lesson, selectedGroups)
 
-  const sortedHourKeys = Object.keys(hours || {}).sort((a, b) => Number(a) - Number(b))
+    const hourIndicesWithLessons = sortedHourKeys
+      .map((_, idx) => ({
+        idx,
+        lessons: (rawDays?.[idx]?.[selectedDayIndex] || []).filter(isLessonActive),
+      }))
+      .filter((item) => item.lessons.length > 0)
+      .map((item) => item.idx)
 
-  const shortDayNames = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt']
+    const hasAnyLessonsThisDay = hourIndicesWithLessons.length > 0
+    const minHourIndex = hasAnyLessonsThisDay ? Math.min(...hourIndicesWithLessons) : 0
+    const maxHourIndex = hasAnyLessonsThisDay
+      ? Math.max(...hourIndicesWithLessons)
+      : sortedHourKeys.length - 1
 
-  const hourIndicesWithLessons = sortedHourKeys
-    .map((_, idx) => ({
-      idx,
-      lessons: rawDays?.[idx]?.[selectedDayIndex] || [],
-    }))
-    .filter((item) => item.lessons.length > 0)
-    .map((item) => item.idx)
+    const visibleHourEntries = sortedHourKeys
+      .map((hourKey, hourIndex) => ({ hourKey, hourIndex, hourObj: hours[hourKey] }))
+      .filter(({ hourIndex }) => hourIndex >= minHourIndex && hourIndex <= maxHourIndex)
 
-  const hasAnyLessonsThisDay = hourIndicesWithLessons.length > 0
-  const minHourIndex = hasAnyLessonsThisDay ? Math.min(...hourIndicesWithLessons) : 0
-  const maxHourIndex = hasAnyLessonsThisDay
-    ? Math.max(...hourIndicesWithLessons)
-    : sortedHourKeys.length - 1
+    const isCurrentDay =
+      currentInfo?.isSchoolDay && currentInfo?.currentDayIndex === selectedDayIndex
 
-  const visibleHourEntries = sortedHourKeys
-    .map((hourKey, hourIndex) => ({ hourKey, hourIndex, hourObj: hours[hourKey] }))
-    .filter(({ hourIndex }) => hourIndex >= minHourIndex && hourIndex <= maxHourIndex)
-
-  return (
-    <div className="w-full flex flex-col gap-3">
-      <Tabs
-        value={String(selectedDayIndex)}
-        onValueChange={(val) => setUserSelectedDayIndex(Number(val))}
-        className="w-full"
+    return (
+      <div
+        className="w-full flex flex-col gap-3 select-none touch-pan-y"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
-        <TabsList className="grid grid-cols-5 w-full !h-auto group-data-horizontal/tabs:!h-auto p-1 rounded-2xl bg-muted/60 border border-border/80 shadow-2xs gap-1">
-          {dayNames.map((dayName, idx) => {
-            const isToday = currentInfo.isSchoolDay && currentInfo.currentDayIndex === idx
+        <div className="flex flex-col gap-1.5 w-full">
+          <Tabs
+            value={String(selectedDayIndex)}
+            onValueChange={(val) => setUserSelectedDayIndex(Number(val))}
+            className="w-full"
+          >
+            <TabsList className="grid grid-cols-5 w-full !h-auto p-1 rounded-2xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
+              {dayNames.map((dayName, idx) => {
+                const isToday = currentInfo.isSchoolDay && currentInfo.currentDayIndex === idx
+                const isSelected = selectedDayIndex === idx
 
-            return (
-              <TabsTrigger
-                key={idx}
-                value={String(idx)}
-                className="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs font-semibold data-active:bg-card data-active:text-foreground data-active:shadow-xs data-active:border data-active:border-border/60 relative h-auto"
-              >
-                <span className="hidden sm:inline">{dayName}</span>
-                <span className="sm:hidden">{shortDayNames[idx] || dayName.slice(0, 3)}</span>
+                return (
+                  <TabsTrigger
+                    key={idx}
+                    value={String(idx)}
+                    className={cn(
+                      'flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs font-semibold relative h-auto transition-all active:scale-95',
+                      isSelected &&
+                        'bg-background text-foreground shadow-xs border border-border/70 font-bold',
+                    )}
+                  >
+                    <span className="text-xs">{shortDayNames[idx] || dayName.slice(0, 3)}</span>
 
-                {isToday && (
-                  <span className="mt-0.5 inline-block size-1.5 rounded-full bg-primary" />
-                )}
-              </TabsTrigger>
-            )
-          })}
-        </TabsList>
-      </Tabs>
+                    {isToday && (
+                      <span
+                        className={cn(
+                          'mt-1 inline-block size-1.5 rounded-full',
+                          isSelected ? 'bg-primary ring-2 ring-primary/20' : 'bg-primary',
+                        )}
+                        title="Dziś"
+                      />
+                    )}
+                  </TabsTrigger>
+                )
+              })}
+            </TabsList>
+          </Tabs>
 
-      {!hasAnyLessonsThisDay ? (
-        <Empty className="border border-dashed border-border/60 bg-muted/20 p-8 rounded-2xl">
-          <EmptyHeader>
-            <EmptyMedia variant="icon" className="size-12 rounded-2xl bg-muted/60 text-muted-foreground [&_svg]:size-6">
-              <Coffee className="text-primary" />
-            </EmptyMedia>
-            <EmptyTitle>Brak zajęć w tym dniu</EmptyTitle>
-            <EmptyDescription className="text-xs">
-              Ciesz się wolnym czasem lub wybierz inny dzień powyżej.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      ) : (
-        <div className="space-y-2">
-          {visibleHourEntries.map(({ hourKey, hourIndex, hourObj }) => {
-            const lessons = rawDays?.[hourIndex]?.[selectedDayIndex] || []
-            const isCurrentPeriod =
-              currentInfo.isSchoolDay &&
-              currentInfo.currentDayIndex === selectedDayIndex &&
-              currentInfo.currentLessonNumber === hourObj.number
+          <div className="flex items-center justify-between px-1 text-xs text-muted-foreground">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              disabled={selectedDayIndex === 0}
+              onClick={() => setUserSelectedDayIndex(Math.max(0, selectedDayIndex - 1))}
+              className="size-7 rounded-lg text-muted-foreground disabled:opacity-30 active:scale-95"
+              aria-label="Poprzedni dzień"
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
 
-            const hasLessons = lessons.length > 0
-
-            if (!hasLessons) {
-              return (
-                <div
-                  key={hourKey}
-                  className="flex items-center justify-between px-3 py-2 rounded-xl border border-dashed border-border/60 bg-muted/20 text-xs text-muted-foreground"
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-foreground text-xs">
+                {dayNames[selectedDayIndex]}
+              </span>
+              {isCurrentDay && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] font-bold px-1.5 py-0 h-4 rounded-full bg-primary/15 text-primary border-transparent"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="flex size-5 items-center justify-center rounded-md bg-muted text-[11px] font-bold text-foreground/70">
-                      {hourObj.number}
-                    </span>
-                    <span className="font-medium">Okienko / Wolna godzina</span>
-                  </div>
-                  <span className="font-mono text-[11px] text-muted-foreground/70">
-                    {hourObj.timeFrom} &ndash; {hourObj.timeTo}
-                  </span>
-                </div>
-              )
-            }
+                  Dziś
+                </Badge>
+              )}
+            </div>
 
-            return (
-              <div
-                key={hourKey}
-                className={`rounded-2xl border p-3 transition-all ${
-                  isCurrentPeriod
-                    ? 'border-primary bg-primary/5 ring-2 ring-primary shadow-sm'
-                    : 'border-border/80 bg-card/70 shadow-2xs'
-                }`}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              disabled={selectedDayIndex === 4}
+              onClick={() => setUserSelectedDayIndex(Math.min(4, selectedDayIndex + 1))}
+              className="size-7 rounded-lg text-muted-foreground disabled:opacity-30 active:scale-95"
+              aria-label="Następny dzień"
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+
+        {!hasAnyLessonsThisDay ? (
+          <Empty className="border border-dashed border-border/70 bg-muted/20 p-8 rounded-3xl animate-in fade-in zoom-in-95 duration-200">
+            <EmptyHeader>
+              <EmptyMedia
+                variant="icon"
+                className="size-14 rounded-2xl bg-muted/70 text-muted-foreground [&_svg]:size-7"
               >
-                <div className="flex items-center justify-between pb-2 mb-1.5 border-b border-border/40">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`flex size-6 items-center justify-center rounded-lg text-xs font-extrabold ${
-                        isCurrentPeriod
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-foreground'
-                      }`}
-                    >
-                      {hourObj.number}
-                    </span>
-                    <span className="text-xs font-mono text-muted-foreground">
+                <Coffee className="text-primary" />
+              </EmptyMedia>
+              <EmptyTitle className="text-sm font-bold">Brak zajęć w tym dniu</EmptyTitle>
+              <EmptyDescription className="text-xs text-muted-foreground max-w-xs">
+                {isCurrentDay
+                  ? 'Brak zaplanowanych lekcji na dziś. Ciesz się wolnym czasem!'
+                  : 'W ten dzień nie ma żadnych lekcji w planie.'}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <div className="space-y-2.5">
+            {visibleHourEntries.map(({ hourKey, hourIndex, hourObj }) => {
+              const lessons = rawDays?.[hourIndex]?.[selectedDayIndex] || []
+              const isCurrentPeriod =
+                currentInfo.isSchoolDay &&
+                currentInfo.currentDayIndex === selectedDayIndex &&
+                currentInfo.currentLessonNumber === hourObj.number
+
+              const activeLessons = lessons.filter(isLessonActive)
+              const hasLessons = activeLessons.length > 0
+
+              if (!hasLessons) {
+                return (
+                  <div
+                    key={hourKey}
+                    className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-dashed border-border/60 bg-muted/20 text-xs text-muted-foreground"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-6 items-center justify-center rounded-lg bg-muted/80 text-[11px] font-bold text-foreground/70">
+                        {hourObj.number}
+                      </span>
+                      <span className="font-medium text-[11px]">Okienko / Wolna godzina</span>
+                    </div>
+                    <span className="font-mono text-[11px] text-muted-foreground/70">
                       {hourObj.timeFrom} &ndash; {hourObj.timeTo}
                     </span>
                   </div>
+                )
+              }
 
-                  {isCurrentPeriod && (
-                    <Badge variant="default" className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary border-transparent animate-pulse">
-                      Trwa teraz
-                    </Badge>
+              return (
+                <div
+                  key={hourKey}
+                  ref={isCurrentPeriod ? currentLessonRef : null}
+                  className={cn(
+                    'rounded-2xl border p-3.5 transition-all shadow-2xs',
+                    isCurrentPeriod
+                      ? 'border-primary/80 bg-primary/[0.04] ring-2 ring-primary/30 shadow-xs'
+                      : 'border-border/70 bg-card/85',
                   )}
+                >
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/40">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'flex size-6.5 items-center justify-center rounded-lg text-xs font-black shadow-2xs',
+                          isCurrentPeriod
+                            ? 'bg-primary text-primary-foreground ring-1 ring-primary/40'
+                            : 'bg-muted text-foreground/85',
+                        )}
+                      >
+                        {hourObj.number}
+                      </span>
+
+                      <span className="text-xs font-mono font-medium text-muted-foreground">
+                        {hourObj.timeFrom} &ndash; {hourObj.timeTo}
+                      </span>
+                    </div>
+
+                    {isCurrentPeriod && (
+                      <Badge
+                        variant="default"
+                        className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border-transparent animate-pulse flex items-center gap-1"
+                      >
+                        <span className="size-1.5 rounded-full bg-primary" />
+                        <span>Trwa teraz</span>
+                      </Badge>
+                    )}
+                  </div>
+
+                  <LessonCell
+                    lessons={lessons}
+                    selectedGroups={selectedGroups}
+                    currentType={type}
+                    isMobileList={true}
+                    onSetSubjectGroup={onSetSubjectGroup}
+                  />
                 </div>
-
-                <LessonCell
-                  lessons={lessons}
-                  selectedGroups={selectedGroups}
-                  currentType={type}
-                  hideFiltered={hideFiltered}
-                />
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  )
-}, (prev, next) => {
-  if (prev.timetable !== next.timetable) return false
-  if (prev.selectedGroups !== next.selectedGroups) return false
-  if (prev.hideFiltered !== next.hideFiltered) return false
-
-  const prevInfo = prev.currentInfo
-  const nextInfo = next.currentInfo
-  if (prevInfo && nextInfo) {
-    return (
-      prevInfo.isSchoolDay === nextInfo.isSchoolDay &&
-      prevInfo.currentDayIndex === nextInfo.currentDayIndex &&
-      prevInfo.currentLessonNumber === nextInfo.currentLessonNumber &&
-      prevInfo.status === nextInfo.status
+              )
+            })}
+          </div>
+        )}
+      </div>
     )
-  }
-  return prevInfo === nextInfo
-})
+  },
+  (prev, next) => {
+    if (prev.timetable !== next.timetable) return false
+    if (prev.onSetSubjectGroup !== next.onSetSubjectGroup) return false
+    if (!areGroupsEqual(prev.selectedGroups, next.selectedGroups)) return false
+
+    const prevInfo = prev.currentInfo
+    const nextInfo = next.currentInfo
+    if (prevInfo && nextInfo) {
+      return (
+        prevInfo.isSchoolDay === nextInfo.isSchoolDay &&
+        prevInfo.currentDayIndex === nextInfo.currentDayIndex &&
+        prevInfo.currentLessonNumber === nextInfo.currentLessonNumber &&
+        prevInfo.status === nextInfo.status
+      )
+    }
+    return prevInfo === nextInfo
+  },
+)

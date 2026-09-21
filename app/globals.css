@@ -214,3 +214,20 @@
   opacity: 0.2;
   border-radius: 9999px;
 }
+
+/* Ukrywanie paska przewijania dla horyzontalnych list */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Bezpieczne strefy dla urządzeń mobilnych (iOS notch / home bar) */
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}

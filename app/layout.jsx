@@ -60,7 +60,7 @@ export default async function RootLayout({ children }) {
             <div className="flex min-h-screen flex-col md:flex-row">
               <MobileNav listData={listData} timetableUrl={schoolConfig.timetableUrl} />
               <Sidebar listData={listData} timetableUrl={schoolConfig.timetableUrl} />
-              <main className="flex-1 flex flex-col min-w-0 pb-12 md:pb-6 overflow-x-hidden">
+              <main className="flex-1 flex flex-col min-w-0 pb-24 md:pb-6 overflow-x-hidden">
                 {children}
               </main>
             </div>

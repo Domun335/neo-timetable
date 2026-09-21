@@ -5,11 +5,30 @@ import { LessonCell } from './lesson-cell'
 import { useCurrentLesson } from '@/hooks/use-current-lesson'
 import { Badge } from '@/components/ui/badge'
 
+function areGroupsEqual(prevGroups, nextGroups) {
+  if (prevGroups === nextGroups) return true
+  if (!prevGroups || !nextGroups) return false
+  if (prevGroups.base !== nextGroups.base) return false
+
+  const prevSub = prevGroups.subjects || {}
+  const nextSub = nextGroups.subjects || {}
+  if (prevSub === nextSub) return true
+
+  const prevKeys = Object.keys(prevSub)
+  const nextKeys = Object.keys(nextSub)
+  if (prevKeys.length !== nextKeys.length) return false
+
+  for (const key of prevKeys) {
+    if (prevSub[key] !== nextSub[key]) return false
+  }
+  return true
+}
+
 export const TimetableTable = memo(function TimetableTable({
   timetable,
   selectedGroups = null,
   currentInfo: passedCurrentInfo,
-  hideFiltered = true,
+  onSetSubjectGroup = null,
 }) {
   const { hours, dayNames, rawDays, type } = timetable
   const hookCurrentInfo = useCurrentLesson(passedCurrentInfo ? null : hours)
@@ -20,10 +39,10 @@ export const TimetableTable = memo(function TimetableTable({
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md shadow-sm print:overflow-visible print:shadow-none print:rounded-xl print:border-border">
       <div className="overflow-x-auto print:overflow-visible">
-        <table className="w-full border-collapse text-left min-w-[700px] print:min-w-0">
+        <table className="w-full border-collapse text-left min-w-[840px] print:min-w-0 table-fixed">
           <thead>
             <tr className="border-b border-border/80 bg-muted/40 print:bg-muted/20">
-              <th className="w-20 lg:w-28 p-3 text-xs font-bold uppercase tracking-wider text-muted-foreground text-center print:p-2 print:text-[11px]">
+              <th className="w-20 lg:w-24 p-3 text-xs font-bold uppercase tracking-wider text-muted-foreground text-center print:p-2 print:text-[11px] shrink-0">
                 Godz.
               </th>
               {dayNames.map((dayName, dayIndex) => {
@@ -32,16 +51,16 @@ export const TimetableTable = memo(function TimetableTable({
                 return (
                   <th
                     key={dayIndex}
-                    className={`p-3 text-xs font-bold uppercase tracking-wider transition-colors print:p-2 print:text-[11px] ${
+                    className={`w-[19%] p-3 text-xs font-bold uppercase tracking-wider transition-colors print:p-2 print:text-[11px] ${
                       isToday
                         ? 'bg-primary/10 text-primary border-b-2 border-primary print:bg-transparent print:text-foreground print:border-b-foreground/20'
                         : 'text-foreground/80'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1">
-                      <span>{dayName}</span>
+                      <span className="truncate">{dayName}</span>
                       {isToday && (
-                        <Badge variant="default" className="no-print text-[10px] font-mono px-1.5 py-0 h-4.5 rounded-full">
+                        <Badge variant="default" className="no-print text-[10px] font-mono px-1.5 py-0 h-4.5 rounded-full shrink-0">
                           Dziś
                         </Badge>
                       )}
@@ -110,7 +129,7 @@ export const TimetableTable = memo(function TimetableTable({
                           lessons={lessonsForSlot}
                           selectedGroups={selectedGroups}
                           currentType={type}
-                          hideFiltered={hideFiltered}
+                          onSetSubjectGroup={onSetSubjectGroup}
                         />
                       </td>
                     )
@@ -125,8 +144,8 @@ export const TimetableTable = memo(function TimetableTable({
   )
 }, (prev, next) => {
   if (prev.timetable !== next.timetable) return false
-  if (prev.selectedGroups !== next.selectedGroups) return false
-  if (prev.hideFiltered !== next.hideFiltered) return false
+  if (prev.onSetSubjectGroup !== next.onSetSubjectGroup) return false
+  if (!areGroupsEqual(prev.selectedGroups, next.selectedGroups)) return false
 
   const prevInfo = prev.currentInfo
   const nextInfo = next.currentInfo
