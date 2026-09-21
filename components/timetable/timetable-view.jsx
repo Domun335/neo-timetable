@@ -15,10 +15,9 @@ import { useCurrentLesson } from '@/hooks/use-current-lesson'
 import { useGroupPreferences } from '@/hooks/use-group-preferences'
 
 export function TimetableView({ timetable }) {
-  const { type, id, title, hours, availableGroups, subjectGroups = [] } = timetable
+  const { type, id, title, hours, rawDays, availableGroups, subjectGroups = [] } = timetable
   const { isFavorite, toggleFavorite } = useFavorites()
   const { saveLastPath } = useLastPath()
-  const currentInfo = useCurrentLesson(hours)
 
   const {
     selectedGroups,
@@ -28,6 +27,12 @@ export function TimetableView({ timetable }) {
     clearSubjectOverride,
     resetAllOverrides,
   } = useGroupPreferences(type, id)
+
+  const currentInfo = useCurrentLesson({
+    hours,
+    rawDays,
+    selectedGroups,
+  })
 
   useEffect(() => {
     saveLastPath(`/${type}/${id}`)

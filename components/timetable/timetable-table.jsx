@@ -31,7 +31,9 @@ export const TimetableTable = memo(function TimetableTable({
   onSetSubjectGroup = null,
 }) {
   const { hours, dayNames, rawDays, type } = timetable
-  const hookCurrentInfo = useCurrentLesson(passedCurrentInfo ? null : hours)
+  const hookCurrentInfo = useCurrentLesson(
+    passedCurrentInfo ? null : { hours, rawDays, selectedGroups }
+  )
   const currentInfo = passedCurrentInfo || hookCurrentInfo
 
   const sortedHourKeys = Object.keys(hours || {}).sort((a, b) => Number(a) - Number(b))

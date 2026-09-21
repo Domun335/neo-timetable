@@ -38,7 +38,9 @@ export const TimetableList = memo(
     onSetSubjectGroup = null,
   }) {
     const { hours, dayNames, rawDays, type } = timetable
-    const hookCurrentInfo = useCurrentLesson(passedCurrentInfo ? null : hours)
+    const hookCurrentInfo = useCurrentLesson(
+      passedCurrentInfo ? null : { hours, rawDays, selectedGroups }
+    )
     const currentInfo = passedCurrentInfo || hookCurrentInfo
 
     const [userSelectedDayIndex, setUserSelectedDayIndex] = useState(null)
@@ -50,7 +52,13 @@ export const TimetableList = memo(
       if (!currentInfo?.isMounted || !currentInfo?.isSchoolDay) {
         return 0
       }
-      if (currentInfo.status === 'after_school') {
+      if (currentInfo.status === 'after_school' || currentInfo.status === 'no_lessons_today') {
+        if (
+          currentInfo.nextSchoolDayIndex !== undefined &&
+          currentInfo.nextSchoolDayIndex !== null
+        ) {
+          return currentInfo.nextSchoolDayIndex
+        }
         return currentInfo.currentDayIndex < 4 ? currentInfo.currentDayIndex + 1 : 0
       }
       return currentInfo.currentDayIndex >= 0 ? currentInfo.currentDayIndex : 0

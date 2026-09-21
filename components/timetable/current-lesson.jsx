@@ -1,6 +1,6 @@
 'use client'
 
-import { Clock, Bell, Coffee, CheckCircle2 } from 'lucide-react'
+import { Clock, Bell, Coffee, CheckCircle2, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useCurrentLesson } from '@/hooks/use-current-lesson'
 import { cn } from '@/lib/utils'
@@ -27,11 +27,25 @@ export function CurrentLessonBadge({ hours, currentInfo: passedCurrentInfo }) {
           color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
           dot: 'bg-amber-500',
         }
+      case 'free_period':
+      case 'window':
+        return {
+          icon: Coffee,
+          color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+          dot: 'bg-indigo-500',
+        }
       case 'before_school':
         return {
           icon: Bell,
           color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
           dot: 'bg-sky-500',
+        }
+      case 'weekend':
+      case 'no_lessons_today':
+        return {
+          icon: Sparkles,
+          color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+          dot: 'bg-purple-500/70',
         }
       case 'after_school':
       default:
