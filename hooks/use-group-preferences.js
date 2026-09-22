@@ -5,14 +5,12 @@ import { useSyncExternalStore, useCallback, useMemo, useRef, useEffect } from 'r
 const DEFAULT_PREFERENCES = { base: null, subjects: {} }
 const DEFAULT_PREFERENCES_JSON = JSON.stringify(DEFAULT_PREFERENCES)
 
-/** @type {Set<() => void>} */
 const listeners = new Set()
 
 function emitChange() {
   listeners.forEach((listener) => listener())
 }
 
-// Pojedynczy, globalny listener zdarzenia storage na poziomie modułu
 if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
     if (!e.key || e.key.startsWith('neoplan_groups_')) {
@@ -29,11 +27,11 @@ function subscribe(listener) {
 }
 
 /**
- * Hook do zarządzania wybraną grupą lekcyjną dla klasy
- * Obsługuje wybór ogólny (baza) oraz personalizację grup per-przedmiot
- * Bezpieczny dla SSR i hydracji w Next.js / React 19
- * @param {'o'|'n'|'s'} type
- * @param {string} id
+ * Zarządza preferencjami wybranej grupy lekcyjnej dla oddziału (baza oraz personalizacja per-przedmiot).
+ * Synchronizuje stan w localStorage między kartami przeglądarki.
+ *
+ * @param {'o'|'n'|'s'} type Typ jednostki ('o' - klasa, 'n' - nauczyciel, 's' - sala)
+ * @param {string} id Identyfikator jednostki
  */
 export function useGroupPreferences(type, id) {
   const groupsStorageKey = `neoplan_groups_${id}`
@@ -55,43 +53,21 @@ export function useGroupPreferences(type, id) {
     try {
       const parsed = JSON.parse(rawGroups)
       if (!parsed || typeof parsed !== 'object') {
-        return { base: null, subjects: {}, general: null, lang: null, wf: null }
+        return DEFAULT_PREFERENCES
       }
 
-      // 1. Nowy format: { base, subjects }
-      if ('base' in parsed || 'subjects' in parsed) {
-        const base = typeof parsed.base === 'number' ? parsed.base : null
-        const subjects =
-          parsed.subjects &&
-          typeof parsed.subjects === 'object' &&
-          !Array.isArray(parsed.subjects)
-            ? parsed.subjects
-            : {}
-        return {
-          base,
-          subjects,
-          // Wsteczna kompatybilność z kodem sprawdzającym stare pola
-          general: base,
-          lang: base,
-          wf: base,
-        }
-      }
+      const base = typeof parsed.base === 'number' ? parsed.base : null
+      const subjects =
+        parsed.subjects && typeof parsed.subjects === 'object' && !Array.isArray(parsed.subjects)
+          ? parsed.subjects
+          : {}
 
-      // 2. Migracja ze starego formatu: { general, lang, wf }
-      const oldGeneral = typeof parsed.general === 'number' ? parsed.general : null
-      return {
-        base: oldGeneral,
-        subjects: {},
-        general: oldGeneral,
-        lang: typeof parsed.lang === 'number' ? parsed.lang : oldGeneral,
-        wf: typeof parsed.wf === 'number' ? parsed.wf : oldGeneral,
-      }
+      return { base, subjects }
     } catch {
-      return { base: null, subjects: {}, general: null, lang: null, wf: null }
+      return DEFAULT_PREFERENCES
     }
   }, [rawGroups])
 
-  // Referencja do aktualnego stanu preferencji zapewniająca stabilność referencyjną callbacków
   const selectedGroupsRef = useRef(selectedGroups)
   useEffect(() => {
     selectedGroupsRef.current = selectedGroups
@@ -101,13 +77,14 @@ export function useGroupPreferences(type, id) {
     (newGroups) => {
       if (type === 'o') {
         try {
-          // Jeśli przekazano stary format { general, lang, wf } bez base:
-          let toSave = newGroups
-          if (newGroups && typeof newGroups === 'object' && !('base' in newGroups) && !('subjects' in newGroups)) {
-            toSave = {
-              base: newGroups.general ?? null,
-              subjects: {},
-            }
+          const toSave = {
+            base: typeof newGroups?.base === 'number' ? newGroups.base : null,
+            subjects:
+              newGroups?.subjects &&
+              typeof newGroups.subjects === 'object' &&
+              !Array.isArray(newGroups.subjects)
+                ? newGroups.subjects
+                : {},
           }
 
           localStorage.setItem(groupsStorageKey, JSON.stringify(toSave))
@@ -120,7 +97,7 @@ export function useGroupPreferences(type, id) {
     [type, groupsStorageKey],
   )
 
-  /** Ustawienie globalnej bazy grup (np. Grupa 1, Grupa 2 lub null dla wszystkich) */
+  // Ustawia bazową grupę dla całej klasy (null oznacza brak podziału / wszystkie grupy)
   const setBaseGroup = useCallback(
     (groupNum) => {
       const num = typeof groupNum === 'number' ? groupNum : null
@@ -133,7 +110,7 @@ export function useGroupPreferences(type, id) {
     [setSelectedGroups],
   )
 
-  /** Ustawienie wybranej grupy lub wariantu dla konkretnego przedmiotu */
+  // Przypisuje wybraną grupę lub wariant dla konkretnego przedmiotu
   const setSubjectGroup = useCallback(
     (subject, groupVal) => {
       if (!subject) return
@@ -152,7 +129,7 @@ export function useGroupPreferences(type, id) {
     [setSelectedGroups],
   )
 
-  /** Wyczyszczenie wyjątku dla konkretnego przedmiotu (powrót do dziedziczenia z bazy) */
+  // Przywraca domyślną grupę bazową dla danego przedmiotu
   const clearSubjectOverride = useCallback(
     (subject) => {
       if (!subject) return
@@ -167,7 +144,7 @@ export function useGroupPreferences(type, id) {
     [setSelectedGroups],
   )
 
-  /** Wyczyszczenie wszystkich wyjątków per-przedmiot przy zachowaniu bazy */
+  // Czyści wszystkie wyjątki przedmiotowe przy zachowaniu grupy bazowej
   const resetAllOverrides = useCallback(() => {
     const current = selectedGroupsRef.current
     setSelectedGroups({
@@ -176,15 +153,11 @@ export function useGroupPreferences(type, id) {
     })
   }, [setSelectedGroups])
 
-  /** Pełny reset do stanu początkowego (Wszystkie grupy, bez wyjątków) */
+  // Resetuje wszystkie preferencje (wszystkie grupy, brak wyjątków)
   const resetAll = useCallback(() => {
-    setSelectedGroups({
-      base: null,
-      subjects: {},
-    })
+    setSelectedGroups(DEFAULT_PREFERENCES)
   }, [setSelectedGroups])
 
-  // Liczba aktywnych wyjątków per-przedmiot
   const overrideCount = useMemo(() => {
     return Object.keys(selectedGroups.subjects || {}).length
   }, [selectedGroups.subjects])

@@ -1,26 +1,36 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
 
 let isOpenGlobal = false
 const listeners = new Set()
 
-function notify(val) {
-  isOpenGlobal = val
-  listeners.forEach((listener) => listener(isOpenGlobal))
+function subscribe(listener) {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
 }
 
-export function useSearchModal() {
-  const [isOpen, setIsOpenState] = useState(isOpenGlobal)
+function getSnapshot() {
+  return isOpenGlobal
+}
 
-  useEffect(() => {
-    const listener = (val) => setIsOpenState(val)
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  }, [])
+function getServerSnapshot() {
+  return false
+}
+
+function notify(val) {
+  isOpenGlobal = val
+  listeners.forEach((listener) => listener())
+}
+
+/**
+ * Hook zarządzający globalnym stanem widoczności okna wyszukiwarki (Command Palette)
+ */
+export function useSearchModal() {
+  const isOpen = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   const setOpen = useCallback((val) => {
-    const next = typeof val === 'function' ? val(isOpenGlobal) : val
+    const next = typeof val === 'function' ? val(isOpenGlobal) : Boolean(val)
     notify(next)
   }, [])
 

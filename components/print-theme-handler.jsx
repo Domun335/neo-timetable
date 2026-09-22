@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 
+// Tymczasowo zdejmuje klasę .dark na czas wydruku, aby style Tailwind dark:* renderowały się w trybie jasnym
 export function PrintThemeHandler() {
   useEffect(() => {
     let wasDark = false

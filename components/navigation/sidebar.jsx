@@ -32,7 +32,7 @@ export function Sidebar({ listData, timetableUrl }) {
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative size-10 rounded-xl overflow-hidden shadow-xs ring-1 ring-border/50 group-hover:scale-105 transition-transform">
             <Image
-              src={schoolConfig.branding.logo || '/logo.svg'}
+              src={schoolConfig.branding?.logo || '/logo.svg'}
               alt={schoolConfig.shortName}
               width={40}
               height={40}

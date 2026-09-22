@@ -7,6 +7,10 @@ import { schoolConfig } from '@/school.config'
 import { useLastPath } from '@/hooks/use-last-path'
 import { useFavorites } from '@/hooks/use-favorites'
 
+/**
+ * Strona startowa aplikacji — automatyczne przekierowanie do ostatnio oglądanego planu,
+ * pierwszego z ulubionych lub domyślnego oddziału
+ */
 export default function HomePage() {
   const router = useRouter()
   const { getLastPath } = useLastPath()
@@ -15,14 +19,12 @@ export default function HomePage() {
   useEffect(() => {
     if (!isLoaded) return
 
-    // 1. Sprawdzamy ostatnio przeglądany plan
     const lastPath = getLastPath()
     if (typeof lastPath === 'string' && /^\/(o|n|s)\/\d+$/.test(lastPath)) {
       router.replace(lastPath)
       return
     }
 
-    // 2. Sprawdzamy czy są ulubione
     if (favorites && favorites.length > 0) {
       const firstFav = favorites[0]
       if (['o', 'n', 's'].includes(firstFav?.type) && /^\d+$/.test(String(firstFav?.id))) {
@@ -31,7 +33,6 @@ export default function HomePage() {
       }
     }
 
-    // 3. Fallback do pierwszej klasy
     router.replace('/o/1')
   }, [isLoaded, getLastPath, favorites, router])
 
@@ -40,7 +41,7 @@ export default function HomePage() {
       <div className="relative flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-300">
         <div className="relative h-16 w-16 rounded-2xl overflow-hidden shadow-lg ring-2 ring-primary/20 animate-pulse">
           <Image
-            src={schoolConfig.branding.logo || '/logo.svg'}
+            src={schoolConfig.branding?.logo || '/logo.svg'}
             alt={schoolConfig.shortName}
             width={64}
             height={64}

@@ -58,12 +58,17 @@ export function GroupFilter({
         aria-label="Wybór grupy lekcyjnej"
         className="inline-flex items-center p-1 rounded-xl bg-muted/60 border border-border/60 gap-1 text-xs font-semibold shadow-2xs"
       >
+        <span className="text-[11px] font-medium text-muted-foreground pl-2.5 pr-1 select-none">
+          Grupa:
+        </span>
+
         <button
           type="button"
+          aria-label="Wszystkie grupy"
           aria-pressed={currentBase === null && overridesCount === 0}
           onClick={() => handleSelectBase(null)}
           className={cn(
-            'px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer',
+            'px-2.5 sm:px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer',
             currentBase === null && overridesCount === 0
               ? 'bg-background text-foreground shadow-2xs'
               : 'text-muted-foreground hover:text-foreground',
@@ -78,16 +83,17 @@ export function GroupFilter({
             <button
               key={num}
               type="button"
+              aria-label={`Grupa ${num}`}
               aria-pressed={isBaseSelected}
               onClick={() => handleSelectBase(num)}
               className={cn(
-                'px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer',
+                'min-w-7.5 px-2.5 sm:px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer text-center',
                 isBaseSelected
                   ? 'bg-primary text-primary-foreground shadow-2xs'
                   : 'text-muted-foreground hover:text-foreground',
               )}
             >
-              Grupa {num}
+              {num}
             </button>
           )
         })}
@@ -98,16 +104,19 @@ export function GroupFilter({
           type="button"
           variant="outline"
           size="sm"
+          aria-label="Dostosuj przedmioty"
           onClick={() => setIsCustomizerOpen(true)}
           className={cn(
-            'h-8.5 px-3 rounded-xl text-xs font-medium gap-1.5 transition-all shadow-2xs border-border/60',
+            'h-8.5 px-2.5 sm:px-3 rounded-xl text-xs font-medium gap-1.5 transition-all shadow-2xs border-border/60',
             overridesCount > 0
               ? 'bg-primary/10 border-primary/40 text-primary hover:bg-primary/20 font-semibold'
               : 'bg-card/70 hover:bg-muted text-muted-foreground hover:text-foreground',
           )}
         >
           <SlidersHorizontal className="size-3.5" />
-          <span>Dostosuj przedmioty</span>
+          <span className="max-[380px]:hidden">
+            Dostosuj<span className="max-[512px]:hidden"> przedmioty</span>
+          </span>
           {overridesCount > 0 && (
             <span className="inline-flex items-center justify-center size-4 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
               {overridesCount}

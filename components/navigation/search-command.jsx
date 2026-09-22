@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { GraduationCap, User, DoorOpen, Star } from 'lucide-react'
-import { normalizeSearchText } from '@/lib/search-utils'
+import { normalizeSearchText, stripSearchSeparators } from '@/lib/search-utils'
 import { useFavorites } from '@/hooks/use-favorites'
 import { useSearchModal } from '@/hooks/use-search-modal'
 import { schoolConfig } from '@/school.config'
@@ -71,6 +71,7 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
         category: 'Klasy',
         icon: GraduationCap,
         _searchKey: normalizeSearchText(c.name),
+        _searchKeyClean: stripSearchSeparators(c.name),
       })),
       ...(listData.teachers || []).map((t) => ({
         type: 'n',
@@ -81,6 +82,7 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
         category: 'Nauczyciele',
         icon: User,
         _searchKey: `${normalizeSearchText(t.name)} ${normalizeSearchText(t.fullName || '')} ${normalizeSearchText(t.shortName || '')}`,
+        _searchKeyClean: `${stripSearchSeparators(t.name)} ${stripSearchSeparators(t.fullName || '')} ${stripSearchSeparators(t.shortName || '')}`,
       })),
       ...(listData.rooms || []).map((r) => ({
         type: 's',
@@ -89,6 +91,7 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
         category: 'Sale',
         icon: DoorOpen,
         _searchKey: normalizeSearchText(r.name),
+        _searchKeyClean: stripSearchSeparators(r.name),
       })),
     ]
   }, [listData])
@@ -96,6 +99,7 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
   const filteredItems = useMemo(() => {
     if (!allItems.length) return []
     const normalizedQuery = normalizeSearchText(query)
+    const cleanQuery = stripSearchSeparators(query)
 
     const typeFiltered =
       selectedType === 'all' ? allItems : allItems.filter((item) => item.type === selectedType)
@@ -108,7 +112,15 @@ export function SearchCommand({ listData, isOpen: propIsOpen, onClose: propOnClo
       return typeFiltered.slice(0, 25)
     }
 
-    return typeFiltered.filter((item) => item._searchKey.includes(normalizedQuery)).slice(0, 30)
+    return typeFiltered
+      .filter((item) => {
+        if (item._searchKey.includes(normalizedQuery)) return true
+        if (cleanQuery && item._searchKeyClean && item._searchKeyClean.includes(cleanQuery)) {
+          return true
+        }
+        return false
+      })
+      .slice(0, 30)
   }, [allItems, query, selectedType, isFavorite])
 
   const selectItem = (item) => {

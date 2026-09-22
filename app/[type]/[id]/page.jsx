@@ -12,7 +12,6 @@ export const revalidate = 3600 // ISR 1h
 export async function generateStaticParams() {
   try {
     const list = await fetchTimetableList()
-    /** @type {{ type: string, id: string }[]} */
     const paths = []
 
     list.classes.forEach((c) => paths.push({ type: 'o', id: c.value }))

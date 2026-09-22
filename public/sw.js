@@ -36,19 +36,19 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const request = event.request
-  // Tylko zapytania GET
   if (request.method !== 'GET') return
 
-  // Ignorujemy zapytania z innych domen lub chrome-extension
+  // Ignorujemy zapytania z innych domen lub rozszerzeń przeglądarki
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
 
-  // 1. Statyczne zasoby Next.js i ikony: Stale-While-Revalidate
+  // 1. Zasoby statyczne (Next.js, ikony, logo): strategia Stale-While-Revalidate
   const isStaticAsset =
     url.pathname.startsWith('/_next/static/') ||
     url.pathname.startsWith('/icons/') ||
     url.pathname === '/favicon.ico' ||
-    url.pathname === '/logo.svg'
+    url.pathname === '/logo.svg' ||
+    /\.(svg|png|jpg|jpeg|webp|ico)$/i.test(url.pathname)
 
   if (isStaticAsset) {
     event.respondWith(
@@ -69,7 +69,7 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // 2. Strony HTML i widoki planu: Network First z timeoutem 2.5s na wypadek słabego zasięgu
+  // 2. Strony HTML i widoki planu: strategia Network First z fallbackiem do cache po 2.5s
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE_NAME)
@@ -82,7 +82,6 @@ self.addEventListener('fetch', (event) => {
         return networkResponse
       })
 
-      // Jeśli mamy zbuforowaną kopię w cache, czekamy max 2500ms na odpowiedź sieci
       if (cachedResponse) {
         const timeoutPromise = new Promise((resolve) =>
           setTimeout(() => resolve(cachedResponse), 2500),
@@ -94,7 +93,7 @@ self.addEventListener('fetch', (event) => {
         }
       }
 
-      // Jeśli nie ma w cache, czekamy na sieć z obsługą błędu braku połączenia
+      // Przy braku kopii w cache pobieramy z sieci lub serwujemy stronę główną
       try {
         return await networkFetch
       } catch {

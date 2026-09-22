@@ -6,7 +6,11 @@ import { GraduationCap, User, DoorOpen, Star } from 'lucide-react'
 import { useFavorites } from '@/hooks/use-favorites'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
+/**
+ * Lista ulubionych jednostek (klasy, nauczyciele, sale) zapisanych przez użytkownika
+ */
 export function FavoritesList() {
   const params = useParams()
   const currentType = params?.type
@@ -39,18 +43,26 @@ export function FavoritesList() {
           return (
             <div
               key={`${fav.type}-${fav.id}`}
-              className={`group flex items-center justify-between rounded-xl px-3 py-2 sm:py-1.5 text-sm sm:text-xs transition-all active:scale-[0.99] ${
+              className={cn(
+                'group flex items-center justify-between rounded-xl px-3 py-2 sm:py-1.5 text-sm sm:text-xs transition-all active:scale-[0.99]',
                 isActive
                   ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-                  : 'text-foreground/85 hover:bg-muted/70 hover:text-foreground active:bg-muted'
-              }`}
+                  : 'text-foreground/85 hover:bg-muted/70 hover:text-foreground active:bg-muted',
+              )}
             >
               <Link
                 href={`/${fav.type}/${fav.id}`}
                 className="flex items-center gap-2.5 flex-1 truncate py-0.5"
                 title={fav.name}
               >
-                <div className={`p-1 rounded-lg ${isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
+                <div
+                  className={cn(
+                    'p-1 rounded-lg',
+                    isActive
+                      ? 'bg-primary-foreground/20 text-primary-foreground'
+                      : 'bg-primary/10 text-primary',
+                  )}
+                >
                   <Icon className="size-3.5 shrink-0" />
                 </div>
                 <span className="truncate font-medium">{fav.name}</span>
@@ -84,4 +96,3 @@ export function FavoritesList() {
     </div>
   )
 }
-

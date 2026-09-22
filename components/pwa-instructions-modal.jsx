@@ -38,7 +38,7 @@ export function PwaInstructionsModal() {
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl overflow-hidden ring-1 ring-border/60 bg-muted/50 p-1 shrink-0 shadow-2xs">
               <Image
-                src={schoolConfig.branding.logo || '/logo.svg'}
+                src={schoolConfig.branding?.logo || '/logo.svg'}
                 alt={schoolConfig.shortName}
                 width={36}
                 height={36}

@@ -8,7 +8,6 @@ export const schoolConfig = {
   branding: {
     primaryColor: '#0284c7',
     accentColor: '#38bdf8',
-    logo: '/logo.svg',
   },
 
   meta: {

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import { LessonCell } from './lesson-cell'
 import { useCurrentLesson } from '@/hooks/use-current-lesson'
-import { Coffee, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { Coffee, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { Badge } from '@/components/ui/badge'
@@ -11,6 +11,9 @@ import { Button } from '@/components/ui/button'
 import { isLessonVisible } from '@/lib/timetable/group-utils'
 import { cn } from '@/lib/utils'
 
+/**
+ * Porównanie stanu wybranych grup lekcyjnych (grupa bazowa + wyjątki przedmiotowe)
+ */
 function areGroupsEqual(prevGroups, nextGroups) {
   if (prevGroups === nextGroups) return true
   if (!prevGroups || !nextGroups) return false
@@ -30,6 +33,10 @@ function areGroupsEqual(prevGroups, nextGroups) {
   return true
 }
 
+/**
+ * Widok listy planu lekcji (karty poszczególnych dni dla urządzeń mobilnych)
+ * Zoptymalizowany przez React.memo — unika ponownego renderowania przy odliczaniu minut
+ */
 export const TimetableList = memo(
   function TimetableList({
     timetable,
@@ -39,7 +46,7 @@ export const TimetableList = memo(
   }) {
     const { hours, dayNames, rawDays, type } = timetable
     const hookCurrentInfo = useCurrentLesson(
-      passedCurrentInfo ? null : { hours, rawDays, selectedGroups }
+      passedCurrentInfo ? null : { hours, rawDays, selectedGroups },
     )
     const currentInfo = passedCurrentInfo || hookCurrentInfo
 
@@ -64,8 +71,7 @@ export const TimetableList = memo(
       return currentInfo.currentDayIndex >= 0 ? currentInfo.currentDayIndex : 0
     })()
 
-    const selectedDayIndex =
-      userSelectedDayIndex !== null ? userSelectedDayIndex : defaultDayIndex
+    const selectedDayIndex = userSelectedDayIndex !== null ? userSelectedDayIndex : defaultDayIndex
 
     const sortedHourKeys = Object.keys(hours || {}).sort((a, b) => Number(a) - Number(b))
     const shortDayNames = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt']
@@ -139,7 +145,7 @@ export const TimetableList = memo(
             onValueChange={(val) => setUserSelectedDayIndex(Number(val))}
             className="w-full"
           >
-            <TabsList className="grid grid-cols-5 w-full !h-auto p-1 rounded-2xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
+            <TabsList className="grid grid-cols-5 w-full !h-auto p-1 rounded-xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
               {dayNames.map((dayName, idx) => {
                 const isToday = currentInfo.isSchoolDay && currentInfo.currentDayIndex === idx
                 const isSelected = selectedDayIndex === idx
@@ -149,22 +155,15 @@ export const TimetableList = memo(
                     key={idx}
                     value={String(idx)}
                     className={cn(
-                      'flex flex-col items-center justify-center py-2 px-1 rounded-xl text-xs font-semibold relative h-auto transition-all active:scale-95',
-                      isSelected &&
-                        'bg-background text-foreground shadow-xs border border-border/70 font-bold',
+                      'flex items-center justify-center h-8 px-1 rounded-lg text-xs font-semibold relative transition-all active:scale-95 border',
+                      isSelected
+                        ? 'bg-background text-foreground font-bold shadow-2xs border-border/70'
+                        : isToday
+                          ? 'border-primary/50 text-primary dark:text-primary bg-primary/5 font-semibold hover:bg-primary/10'
+                          : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-background/40',
                     )}
                   >
                     <span className="text-xs">{shortDayNames[idx] || dayName.slice(0, 3)}</span>
-
-                    {isToday && (
-                      <span
-                        className={cn(
-                          'mt-1 inline-block size-1.5 rounded-full',
-                          isSelected ? 'bg-primary ring-2 ring-primary/20' : 'bg-primary',
-                        )}
-                        title="Dziś"
-                      />
-                    )}
                   </TabsTrigger>
                 )
               })}

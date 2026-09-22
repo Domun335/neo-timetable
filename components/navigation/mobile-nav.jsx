@@ -15,7 +15,6 @@ import {
   LayoutGrid,
   ExternalLink,
   Printer,
-  Sparkles,
 } from 'lucide-react'
 import { schoolConfig } from '@/school.config'
 import { EntityList } from './entity-list'
@@ -27,12 +26,10 @@ import { useFavorites } from '@/hooks/use-favorites'
 import { useLastPath } from '@/hooks/use-last-path'
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetClose,
 } from '@/components/ui/sheet'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -44,7 +41,7 @@ export function MobileNav({ listData, timetableUrl }) {
   const pathname = usePathname()
   const router = useRouter()
   const currentType = params?.type || 'o'
-  
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(
@@ -58,6 +55,8 @@ export function MobileNav({ listData, timetableUrl }) {
   const isTimetableActive = Boolean(params?.type && params?.id)
   const favCount = isLoaded ? favorites?.length || 0 : 0
 
+  // Zamykanie szuflad po zmianie trasy zgodnie z zalecanym wzorcem React "Adjusting state during render"
+  // (zapobiega kaskadowym renderom wywoływanym przez useEffect i spełnia regułę set-state-in-effect)
   const [prevPathname, setPrevPathname] = useState(pathname)
   if (prevPathname !== pathname) {
     setPrevPathname(pathname)
@@ -72,7 +71,11 @@ export function MobileNav({ listData, timetableUrl }) {
       const last = getLastPath()
       if (typeof last === 'string' && /^\/(o|n|s)\/\d+$/.test(last)) {
         router.push(last)
-      } else if (favorites && favorites.length > 0 && ['o', 'n', 's'].includes(favorites[0]?.type)) {
+      } else if (
+        favorites &&
+        favorites.length > 0 &&
+        ['o', 'n', 's'].includes(favorites[0]?.type)
+      ) {
         router.push(`/${favorites[0].type}/${favorites[0].id}`)
       } else {
         const firstClassId = listData?.classes?.[0]?.value || '1'
@@ -91,7 +94,7 @@ export function MobileNav({ listData, timetableUrl }) {
           >
             <div className="size-8 shrink-0 rounded-xl overflow-hidden ring-1 ring-border/50 bg-muted/40 p-0.5 shadow-2xs">
               <Image
-                src={schoolConfig.branding.logo || '/logo.svg'}
+                src={schoolConfig.branding?.logo || '/logo.svg'}
                 alt={schoolConfig.shortName}
                 width={32}
                 height={32}
@@ -224,7 +227,10 @@ export function MobileNav({ listData, timetableUrl }) {
               <Star className="size-4.5 fill-amber-400 text-amber-400 shrink-0" />
               <span>Twoje Ulubione Plany</span>
               {favCount > 0 && (
-                <Badge variant="secondary" className="text-xs px-2 py-0.5 rounded-md font-mono shrink-0">
+                <Badge
+                  variant="secondary"
+                  className="text-xs px-2 py-0.5 rounded-md font-mono shrink-0"
+                >
                   {favCount}
                 </Badge>
               )}
@@ -243,7 +249,8 @@ export function MobileNav({ listData, timetableUrl }) {
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-foreground">Brak ulubionych planów</p>
                   <p className="text-xs text-muted-foreground max-w-xs">
-                    Kliknij ikonę gwiazdki obok nazwy dowolnej klasy, nauczyciela lub sali, aby dodać ją do szybkiego wyboru.
+                    Kliknij ikonę gwiazdki obok nazwy dowolnej klasy, nauczyciela lub sali, aby
+                    dodać ją do szybkiego wyboru.
                   </p>
                 </div>
                 <Button
@@ -275,7 +282,7 @@ export function MobileNav({ listData, timetableUrl }) {
             <SheetTitle className="flex items-center gap-2.5 text-sm font-bold text-foreground">
               <div className="size-7 rounded-lg overflow-hidden ring-1 ring-border/50 bg-muted/40 p-0.5">
                 <Image
-                  src={schoolConfig.branding.logo || '/logo.svg'}
+                  src={schoolConfig.branding?.logo || '/logo.svg'}
                   alt={schoolConfig.shortName}
                   width={28}
                   height={28}
@@ -284,7 +291,9 @@ export function MobileNav({ listData, timetableUrl }) {
               </div>
               <div className="flex flex-col">
                 <span className="leading-tight">{schoolConfig.shortName}</span>
-                <span className="text-[10px] font-normal text-muted-foreground">Katalog planów lekcji</span>
+                <span className="text-[10px] font-normal text-muted-foreground">
+                  Katalog planów lekcji
+                </span>
               </div>
             </SheetTitle>
             <SheetDescription className="sr-only">
@@ -343,28 +352,19 @@ export function MobileNav({ listData, timetableUrl }) {
                 value="classes"
                 className="flex-1 min-h-0 h-full mt-0 overflow-hidden flex flex-col"
               >
-                <EntityList
-                  items={listData?.classes || []}
-                  type="o"
-                />
+                <EntityList items={listData?.classes || []} type="o" />
               </TabsContent>
               <TabsContent
                 value="teachers"
                 className="flex-1 min-h-0 h-full mt-0 overflow-hidden flex flex-col"
               >
-                <EntityList
-                  items={listData?.teachers || []}
-                  type="n"
-                />
+                <EntityList items={listData?.teachers || []} type="n" />
               </TabsContent>
               <TabsContent
                 value="rooms"
                 className="flex-1 min-h-0 h-full mt-0 overflow-hidden flex flex-col"
               >
-                <EntityList
-                  items={listData?.rooms || []}
-                  type="s"
-                />
+                <EntityList items={listData?.rooms || []} type="s" />
               </TabsContent>
             </div>
           </Tabs>

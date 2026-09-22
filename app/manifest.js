@@ -37,7 +37,11 @@ export default function manifest() {
       {
         src: schoolConfig.branding?.logo || '/logo.svg',
         sizes: 'any',
-        type: 'image/svg+xml',
+        type: (schoolConfig.branding?.logo || '/logo.svg').endsWith('.png')
+          ? 'image/png'
+          : (schoolConfig.branding?.logo || '/logo.svg').endsWith('.webp')
+            ? 'image/webp'
+            : 'image/svg+xml',
         purpose: 'any',
       },
       {
