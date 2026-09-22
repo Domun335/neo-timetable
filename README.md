@@ -152,7 +152,7 @@ export const schoolConfig = {
   // Etykieta semestru / roku szkolnego
   semester: 'Semestr 1',
 
-  // Personalizacja wizualna (wektorowe logo SVG oraz ikony PWA generowane są w 100% automatycznie z kolorów)
+  // Personalizacja wizualna (Logo jest generowane automatycznie z podanych kolorów)
   branding: {
     primaryColor: '#0284c7', // Główny akcent kolorystyczny (Sky Blue)
     accentColor: '#38bdf8', // Kolor pomocniczy
