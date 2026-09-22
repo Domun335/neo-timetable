@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./public/og-image.jpg" alt="NeoPlan Preview" width="100%" />
+</p>
+
 # 🚀 NeoPlan - Nowoczesny Plan Lekcji
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black?style=flat&logo=next.js)](https://nextjs.org/)
@@ -152,7 +156,7 @@ export const schoolConfig = {
   branding: {
     primaryColor: '#0284c7', // Główny akcent kolorystyczny (Sky Blue)
     accentColor: '#38bdf8', // Kolor pomocniczy
-    // logo: '/custom-logo.png', // Opcjonalnie: własny plik graficzny w public/ (domyślnie generowany jest automatyczny /logo.svg)
+    // logo: '/custom-logo.png', // Opcjonalnie: własne logo w public/
   },
 
   // Metadane SEO i udostępniania
