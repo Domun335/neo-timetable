@@ -124,6 +124,8 @@ export function MobileNav({ listData, timetableUrl }) {
 
           <ThemeToggle />
 
+          <PwaInstallButton />
+
           <Button
             type="button"
             variant="ghost"

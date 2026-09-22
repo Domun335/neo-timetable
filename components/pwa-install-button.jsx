@@ -17,11 +17,11 @@ export function PwaInstallButton({ className = '', variant = 'icon' }) {
         type="button"
         onClick={install}
         className={cn(
-          'group flex w-full items-center gap-2.5 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-left transition-all hover:bg-primary/10 hover:border-primary/50 animate-in fade-in slide-in-from-top-2 duration-300',
+          'group flex w-full items-center gap-2.5 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-left transition-all hover:bg-primary/10 hover:border-primary/50 active:scale-[0.98] animate-in fade-in slide-in-from-top-2 duration-300 cursor-pointer',
           className,
         )}
       >
-        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary ring-1 ring-primary/20">
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary ring-1 ring-primary/20 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
           <Download className="size-3.5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -42,7 +42,7 @@ export function PwaInstallButton({ className = '', variant = 'icon' }) {
             size="icon"
             onClick={install}
             className={cn(
-              'rounded-xl border-border/60 bg-card/60 backdrop-blur-md shadow-xs text-muted-foreground transition-all hover:scale-105 hover:text-primary hover:border-primary/40 active:scale-95 animate-in fade-in zoom-in-90 duration-200',
+              'rounded-xl border-border/60 bg-card/60 backdrop-blur-md shadow-xs text-muted-foreground transition-all hover:scale-105 hover:text-primary hover:border-primary/40 active:scale-95 animate-in fade-in zoom-in-90 duration-200 cursor-pointer',
               className,
             )}
             aria-label="Zainstaluj aplikację na urządzeniu"

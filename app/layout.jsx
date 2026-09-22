@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Sidebar } from '@/components/navigation/sidebar'
 import { MobileNav } from '@/components/navigation/mobile-nav'
 import { SearchCommand } from '@/components/navigation/search-command'
+import { PwaInstructionsModal } from '@/components/pwa-instructions-modal'
 import { PwaRegister } from '@/components/pwa-register'
 import { PrintThemeHandler } from '@/components/print-theme-handler'
 import { fetchTimetableList } from '@/lib/timetable/fetch-list.js'
@@ -25,6 +26,11 @@ export const metadata = {
   icons: {
     icon: schoolConfig.branding?.logo || '/logo.svg',
     apple: '/apple-icon',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: schoolConfig.shortName || 'NeoPlan',
   },
 }
 
@@ -65,6 +71,7 @@ export default async function RootLayout({ children }) {
               </main>
             </div>
             <SearchCommand listData={listData} />
+            <PwaInstructionsModal />
           </TooltipProvider>
         </ThemeProvider>
       </body>
