@@ -85,7 +85,7 @@ export function PwaInstructionsModal() {
           )}
 
           <Tabs defaultValue={defaultTab} className="w-full gap-3 flex flex-col">
-            <TabsList className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/60 border border-border/60 text-xs w-full !h-auto">
+            <TabsList className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/60 border border-border/60 text-xs w-full h-auto!">
               <TabsTrigger
                 value="ios"
                 className="flex items-center justify-center gap-1.5 py-1.5 px-1 rounded-lg font-medium text-xs data-active:bg-background data-active:text-foreground data-active:shadow-xs"

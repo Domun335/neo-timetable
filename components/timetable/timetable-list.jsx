@@ -145,7 +145,7 @@ export const TimetableList = memo(
             onValueChange={(val) => setUserSelectedDayIndex(Number(val))}
             className="w-full"
           >
-            <TabsList className="grid grid-cols-5 w-full !h-auto p-1 rounded-xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
+            <TabsList className="grid grid-cols-5 w-full h-auto! p-1 rounded-xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
               {dayNames.map((dayName, idx) => {
                 const isToday = currentInfo.isSchoolDay && currentInfo.currentDayIndex === idx
                 const isSelected = selectedDayIndex === idx
@@ -266,7 +266,7 @@ export const TimetableList = memo(
                   className={cn(
                     'rounded-2xl border p-3.5 transition-all shadow-2xs',
                     isCurrentPeriod
-                      ? 'border-primary/80 bg-primary/[0.04] ring-2 ring-primary/30 shadow-xs'
+                      ? 'border-primary/80 bg-primary/4 ring-2 ring-primary/30 shadow-xs'
                       : 'border-border/70 bg-card/85',
                   )}
                 >

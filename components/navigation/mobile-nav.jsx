@@ -127,7 +127,17 @@ export function MobileNav({ listData, timetableUrl }) {
 
           <ThemeToggle />
 
-          <PwaInstallButton />
+          <Link
+            href="/wolne-sale"
+            className={cn(
+              'size-8.5 inline-flex items-center justify-center rounded-xl border border-border/60 bg-card/60 backdrop-blur-md shadow-xs text-muted-foreground transition-all hover:scale-105 hover:text-primary hover:border-primary/40 active:scale-95',
+              pathname === '/wolne-sale' && 'border-primary/50 text-primary bg-primary/10',
+            )}
+            aria-label="Wolne sale lekcyjne"
+            title="Wolne sale lekcyjne"
+          >
+            <DoorOpen className="size-4" />
+          </Link>
 
           <Button
             type="button"
@@ -240,7 +250,7 @@ export function MobileNav({ listData, timetableUrl }) {
             </SheetDescription>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto py-1 min-h-[120px]">
+          <div className="flex-1 overflow-y-auto py-1 min-h-30">
             {favCount === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center px-4 space-y-3">
                 <div className="size-12 rounded-2xl bg-amber-400/10 flex items-center justify-center text-amber-500">
@@ -323,7 +333,7 @@ export function MobileNav({ listData, timetableUrl }) {
             onValueChange={setActiveTab}
             className="flex-1 min-h-0 overflow-hidden flex flex-col mt-3 gap-0"
           >
-            <TabsList className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/60 border border-border/60 mb-2 shrink-0 text-xs w-full !h-auto">
+            <TabsList className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/60 border border-border/60 mb-2 shrink-0 text-xs w-full h-auto!">
               <TabsTrigger
                 value="classes"
                 className="flex items-center justify-center gap-1.5 py-1.5 px-1 rounded-lg font-medium text-xs data-active:bg-background data-active:text-foreground data-active:shadow-xs h-auto"

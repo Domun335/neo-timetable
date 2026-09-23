@@ -7,7 +7,6 @@ export const size = {
 }
 export const contentType = 'image/png'
 
-
 export default function AppleIcon() {
   const primary = schoolConfig.branding?.primaryColor || '#0284c7'
   const accent = schoolConfig.branding?.accentColor || '#38bdf8'
@@ -62,4 +61,3 @@ export default function AppleIcon() {
     },
   )
 }
-

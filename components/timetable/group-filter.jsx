@@ -56,10 +56,11 @@ export function GroupFilter({
       <div
         role="group"
         aria-label="Wybór grupy lekcyjnej"
-        className="inline-flex items-center p-1 rounded-xl bg-muted/60 border border-border/60 gap-1 text-xs font-semibold shadow-2xs"
+        className="inline-flex items-center p-1 rounded-xl bg-muted/60 border border-border/60 gap-1 text-xs font-semibold shadow-2xs shrink-0"
       >
-        <span className="text-[11px] font-medium text-muted-foreground pl-2.5 pr-1 select-none">
-          Grupa:
+        <span className="text-[11px] font-medium text-muted-foreground pl-2 sm:pl-2.5 pr-1 select-none">
+          <span className="sm:hidden">Gr:</span>
+          <span className="hidden sm:inline">Grupy:</span>
         </span>
 
         <button
@@ -105,20 +106,21 @@ export function GroupFilter({
           variant="outline"
           size="sm"
           aria-label="Dostosuj przedmioty"
+          title="Dostosuj przedmioty"
           onClick={() => setIsCustomizerOpen(true)}
           className={cn(
-            'h-8.5 px-2.5 sm:px-3 rounded-xl text-xs font-medium gap-1.5 transition-all shadow-2xs border-border/60',
+            'h-8.5 px-2.5 sm:px-3 rounded-xl text-xs font-medium gap-1.5 transition-all shadow-2xs border-border/60 shrink-0',
             overridesCount > 0
               ? 'bg-primary/10 border-primary/40 text-primary hover:bg-primary/20 font-semibold'
               : 'bg-card/70 hover:bg-muted text-muted-foreground hover:text-foreground',
           )}
         >
-          <SlidersHorizontal className="size-3.5" />
-          <span className="max-[380px]:hidden">
-            Dostosuj<span className="max-[512px]:hidden"> przedmioty</span>
+          <SlidersHorizontal className="size-3.5 shrink-0" />
+          <span className="hidden min-[375px]:inline">
+            Dostosuj<span className="hidden sm:inline"> przedmioty</span>
           </span>
           {overridesCount > 0 && (
-            <span className="inline-flex items-center justify-center size-4 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">
+            <span className="inline-flex items-center justify-center size-4 text-[10px] font-bold rounded-full bg-primary text-primary-foreground shrink-0">
               {overridesCount}
             </span>
           )}

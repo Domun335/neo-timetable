@@ -29,9 +29,7 @@ export function GroupCustomizerDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl border-border/70 shadow-xl">
         <DialogHeader className="px-5 sm:px-6 py-4 border-b border-border/60 bg-muted/20">
-          <DialogTitle className="text-base font-bold text-foreground">
-            Dostosuj grupy
-          </DialogTitle>
+          <DialogTitle className="text-base font-bold text-foreground">Dostosuj grupy</DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground mt-0.5">
             Wybierz grupę dla każdego przedmiotu z podziałem:
           </DialogDescription>
@@ -41,13 +39,14 @@ export function GroupCustomizerDialog({
           {subjectGroups.map((item) => {
             const currentOverride = subjectsMap[item.subject]
             const hasOverride = currentOverride !== undefined
-            const subjectHasBaseGroup = baseGroup !== null && item.groups.some((g) => g.num === baseGroup)
+            const subjectHasBaseGroup =
+              baseGroup !== null && item.groups.some((g) => g.num === baseGroup)
 
             const effectiveSelected = hasOverride
               ? currentOverride
               : subjectHasBaseGroup
-              ? baseGroup
-              : 'all'
+                ? baseGroup
+                : 'all'
 
             return (
               <div

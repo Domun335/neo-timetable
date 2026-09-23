@@ -106,30 +106,29 @@ export function TimetableView({ timetable }) {
         </div>
       </div>
 
-      {type === 'o' && (
-        (subjectGroups?.length || 0) > 0 ||
-        Math.max(
-          0,
-          ...(availableGroups?.general || []),
-          ...(availableGroups?.lang || []),
-          ...(availableGroups?.wf || []),
-        ) >= 2
-      ) && (
-        <div className="no-print">
-          <GroupFilter
-            availableGroups={availableGroups}
-            subjectGroups={subjectGroups}
-            selectedGroups={selectedGroups}
-            onChangeGroups={setSelectedGroups}
-            onSetBaseGroup={setBaseGroup}
-            onSetSubjectGroup={setSubjectGroup}
-            onClearSubjectOverride={clearSubjectOverride}
-            onResetAllOverrides={resetAllOverrides}
-          />
-        </div>
-      )}
+      {type === 'o' &&
+        ((subjectGroups?.length || 0) > 0 ||
+          Math.max(
+            0,
+            ...(availableGroups?.general || []),
+            ...(availableGroups?.lang || []),
+            ...(availableGroups?.wf || []),
+          ) >= 2) && (
+          <div className="no-print">
+            <GroupFilter
+              availableGroups={availableGroups}
+              subjectGroups={subjectGroups}
+              selectedGroups={selectedGroups}
+              onChangeGroups={setSelectedGroups}
+              onSetBaseGroup={setBaseGroup}
+              onSetSubjectGroup={setSubjectGroup}
+              onClearSubjectOverride={clearSubjectOverride}
+              onResetAllOverrides={resetAllOverrides}
+            />
+          </div>
+        )}
 
-      <div className="hidden md:block print:!block timetable-desktop-view">
+      <div className="hidden md:block print:block! timetable-desktop-view">
         <TimetableTable
           timetable={timetable}
           selectedGroups={selectedGroups}
@@ -138,7 +137,7 @@ export function TimetableView({ timetable }) {
         />
       </div>
 
-      <div className="block md:hidden print:!hidden timetable-mobile-view">
+      <div className="block md:hidden print:hidden! timetable-mobile-view">
         <TimetableList
           timetable={timetable}
           selectedGroups={selectedGroups}

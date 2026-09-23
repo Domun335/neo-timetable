@@ -50,7 +50,7 @@ export const TimetableTable = memo(
     return (
       <div className="w-full overflow-hidden rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md shadow-sm print:overflow-visible print:shadow-none print:rounded-xl print:border-border">
         <div className="overflow-x-auto print:overflow-visible">
-          <table className="w-full border-collapse text-left min-w-[840px] print:min-w-0 table-fixed">
+          <table className="w-full border-collapse text-left min-w-210 print:min-w-0 table-fixed">
             <thead>
               <tr className="border-b border-border/80 bg-muted/40 print:bg-muted/20">
                 <th className="w-20 lg:w-24 p-3 text-xs font-bold uppercase tracking-wider text-muted-foreground text-center print:p-2 print:text-[11px] shrink-0">

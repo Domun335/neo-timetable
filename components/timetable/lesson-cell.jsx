@@ -16,7 +16,7 @@ export function LessonCell({
 }) {
   if (!lessons || lessons.length === 0) {
     return (
-      <div className="h-full min-h-[52px] flex items-center justify-center text-muted-foreground/30 text-xs select-none">
+      <div className="h-full min-h-13 flex items-center justify-center text-muted-foreground/30 text-xs select-none">
         &mdash;
       </div>
     )
@@ -26,7 +26,7 @@ export function LessonCell({
 
   if (visibleLessons.length === 0) {
     return (
-      <div className="h-full min-h-[52px] flex items-center justify-center text-muted-foreground/30 text-xs select-none">
+      <div className="h-full min-h-13 flex items-center justify-center text-muted-foreground/30 text-xs select-none">
         &mdash;
       </div>
     )
@@ -60,9 +60,7 @@ export function LessonCell({
               key={idx}
               className={cn(
                 'flex flex-col gap-1.5 transition-all',
-                visibleLessons.length > 1 &&
-                  idx > 0 &&
-                  'pt-2.5 border-t border-border/50',
+                visibleLessons.length > 1 && idx > 0 && 'pt-2.5 border-t border-border/50',
               )}
             >
               <div className="flex items-start justify-between gap-2">
@@ -70,41 +68,44 @@ export function LessonCell({
                   {lesson.subject}
                 </span>
 
-                {hasGroup && badgeLabel && (
-                  onSetSubjectGroup && lesson.groupNum ? (() => {
-                    const currentOverride =
-                      selectedGroups?.subjects &&
-                      Object.hasOwn(selectedGroups.subjects, lesson.subject)
-                        ? selectedGroups.subjects[lesson.subject]
-                        : undefined
-                    const isOverriddenThis = currentOverride === lesson.groupNum
+                {hasGroup &&
+                  badgeLabel &&
+                  (onSetSubjectGroup && lesson.groupNum ? (
+                    (() => {
+                      const currentOverride =
+                        selectedGroups?.subjects &&
+                        Object.hasOwn(selectedGroups.subjects, lesson.subject)
+                          ? selectedGroups.subjects[lesson.subject]
+                          : undefined
+                      const isOverriddenThis = currentOverride === lesson.groupNum
 
-                    return (
-                      <button
-                        type="button"
-                        aria-pressed={isOverriddenThis}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          if (isOverriddenThis) {
-                            onSetSubjectGroup(lesson.subject, undefined)
-                          } else {
-                            onSetSubjectGroup(lesson.subject, lesson.groupNum)
+                      return (
+                        <button
+                          type="button"
+                          aria-pressed={isOverriddenThis}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (isOverriddenThis) {
+                              onSetSubjectGroup(lesson.subject, undefined)
+                            } else {
+                              onSetSubjectGroup(lesson.subject, lesson.groupNum)
+                            }
+                          }}
+                          title={
+                            isOverriddenThis
+                              ? `Kliknij, aby odznaczyć Grupę ${lesson.groupNum} i przywrócić domyślne`
+                              : `Kliknij, aby wybrać Grupę ${lesson.groupNum} dla: ${lesson.subject}`
                           }
-                        }}
-                        title={
-                          isOverriddenThis
-                            ? `Kliknij, aby odznaczyć Grupę ${lesson.groupNum} i przywrócić domyślne`
-                            : `Kliknij, aby wybrać Grupę ${lesson.groupNum} dla: ${lesson.subject}`
-                        }
-                        className={cn(
-                          'shrink-0 font-mono text-[11px] px-2 py-0.5 h-5 font-semibold rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
-                          badgeClass,
-                        )}
-                      >
-                        {badgeLabel}
-                      </button>
-                    )
-                  })() : (
+                          className={cn(
+                            'shrink-0 font-mono text-[11px] px-2 py-0.5 h-5 font-semibold rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
+                            badgeClass,
+                          )}
+                        >
+                          {badgeLabel}
+                        </button>
+                      )
+                    })()
+                  ) : (
                     <Badge
                       variant="outline"
                       className={cn(
@@ -114,13 +115,13 @@ export function LessonCell({
                     >
                       {badgeLabel}
                     </Badge>
-                  )
-                )}
+                  ))}
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                {lesson.teacher && currentType !== 'n' && (
-                  lesson.teacherId ? (
+                {lesson.teacher &&
+                  currentType !== 'n' &&
+                  (lesson.teacherId ? (
                     <Link
                       href={`/n/${lesson.teacherId}`}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all text-xs font-semibold"
@@ -133,11 +134,11 @@ export function LessonCell({
                       <User className="size-3 shrink-0" />
                       <span>{lesson.teacher}</span>
                     </span>
-                  )
-                )}
+                  ))}
 
-                {lesson.room && currentType !== 's' && (
-                  lesson.roomId ? (
+                {lesson.room &&
+                  currentType !== 's' &&
+                  (lesson.roomId ? (
                     <Link
                       href={`/s/${lesson.roomId}`}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted text-muted-foreground hover:text-foreground active:scale-95 transition-all text-xs font-mono font-medium hover:bg-accent"
@@ -150,11 +151,11 @@ export function LessonCell({
                       <DoorOpen className="size-3 shrink-0" />
                       <span>s. {lesson.room}</span>
                     </span>
-                  )
-                )}
+                  ))}
 
-                {lesson.className && currentType !== 'o' && (
-                  lesson.classId ? (
+                {lesson.className &&
+                  currentType !== 'o' &&
+                  (lesson.classId ? (
                     <Link
                       href={`/o/${lesson.classId}`}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all text-xs font-bold"
@@ -167,8 +168,7 @@ export function LessonCell({
                       <GraduationCap className="size-3 shrink-0" />
                       <span>{lesson.className}</span>
                     </span>
-                  )
-                )}
+                  ))}
               </div>
             </div>
           )
@@ -184,8 +184,8 @@ export function LessonCell({
         const teacherTooltip = lesson.teacherName
           ? `Nauczyciel: ${lesson.teacherName}`
           : lesson.teacher
-          ? `Nauczyciel: ${lesson.teacher}`
-          : ''
+            ? `Nauczyciel: ${lesson.teacher}`
+            : ''
 
         const cat = lesson.groupCategory || 'general'
         const badgeLabel = (() => {
@@ -214,47 +214,50 @@ export function LessonCell({
               <span className="font-bold text-xs text-foreground leading-snug line-clamp-2">
                 {lesson.subject}
               </span>
-              {hasGroup && badgeLabel && (
-                onSetSubjectGroup && lesson.groupNum ? (() => {
-                  const currentOverride =
-                    selectedGroups?.subjects &&
-                    Object.hasOwn(selectedGroups.subjects, lesson.subject)
-                      ? selectedGroups.subjects[lesson.subject]
-                      : undefined
-                  const isOverriddenThis = currentOverride === lesson.groupNum
+              {hasGroup &&
+                badgeLabel &&
+                (onSetSubjectGroup && lesson.groupNum ? (
+                  (() => {
+                    const currentOverride =
+                      selectedGroups?.subjects &&
+                      Object.hasOwn(selectedGroups.subjects, lesson.subject)
+                        ? selectedGroups.subjects[lesson.subject]
+                        : undefined
+                    const isOverriddenThis = currentOverride === lesson.groupNum
 
-                  return (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <button
-                            type="button"
-                            aria-pressed={isOverriddenThis}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              if (isOverriddenThis) {
-                                onSetSubjectGroup(lesson.subject, undefined)
-                              } else {
-                                onSetSubjectGroup(lesson.subject, lesson.groupNum)
-                              }
-                            }}
-                            className={cn(
-                              'shrink-0 font-mono text-[10px] px-1.5 py-0 h-4.5 font-medium rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
-                              badgeClass,
-                            )}
-                          >
-                            {badgeLabel}
-                          </button>
-                        }
-                      />
-                      <TooltipContent>
-                        {isOverriddenThis
-                          ? `Kliknij, aby odznaczyć Grupę ${lesson.groupNum} i przywrócić domyślne`
-                          : `Kliknij, aby przypisać Grupę ${lesson.groupNum} do: ${lesson.subject}`}
-                      </TooltipContent>
-                    </Tooltip>
-                  )
-                })() : (
+                    return (
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <button
+                              type="button"
+                              aria-pressed={isOverriddenThis}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (isOverriddenThis) {
+                                  onSetSubjectGroup(lesson.subject, undefined)
+                                } else {
+                                  onSetSubjectGroup(lesson.subject, lesson.groupNum)
+                                }
+                              }}
+                              className={cn(
+                                'shrink-0 font-mono text-[10px] px-1.5 py-0 h-4.5 font-medium rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
+                                badgeClass,
+                              )}
+                            >
+                              {badgeLabel}
+                            </button>
+                          }
+                        />
+                        <TooltipContent>
+                          {isOverriddenThis
+                            ? `Kliknij, aby odznaczyć Grupę ${lesson.groupNum} i przywrócić domyślne`
+                            : `Kliknij, aby przypisać Grupę ${lesson.groupNum} do: ${lesson.subject}`}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  })()
+                ) : (
                   <Badge
                     variant="outline"
                     className={cn(
@@ -264,13 +267,13 @@ export function LessonCell({
                   >
                     {badgeLabel}
                   </Badge>
-                )
-              )}
+                ))}
             </div>
 
             <div className="flex items-center gap-1.5 flex-wrap text-[11px] text-muted-foreground pt-0.5">
-              {lesson.teacher && currentType !== 'n' && (
-                lesson.teacherId ? (
+              {lesson.teacher &&
+                currentType !== 'n' &&
+                (lesson.teacherId ? (
                   <Tooltip>
                     <TooltipTrigger
                       render={
@@ -286,11 +289,11 @@ export function LessonCell({
                   </Tooltip>
                 ) : (
                   <span className="text-foreground/80 font-medium">{lesson.teacher}</span>
-                )
-              )}
+                ))}
 
-              {lesson.room && currentType !== 's' && (
-                lesson.roomId ? (
+              {lesson.room &&
+                currentType !== 's' &&
+                (lesson.roomId ? (
                   <Tooltip>
                     <TooltipTrigger
                       render={
@@ -306,11 +309,11 @@ export function LessonCell({
                   </Tooltip>
                 ) : (
                   <span className="text-muted-foreground font-mono">{lesson.room}</span>
-                )
-              )}
+                ))}
 
-              {lesson.className && currentType !== 'o' && (
-                lesson.classId ? (
+              {lesson.className &&
+                currentType !== 'o' &&
+                (lesson.classId ? (
                   <Tooltip>
                     <TooltipTrigger
                       render={
@@ -326,8 +329,7 @@ export function LessonCell({
                   </Tooltip>
                 ) : (
                   <span className="font-bold text-foreground">{lesson.className}</span>
-                )
-              )}
+                ))}
             </div>
           </div>
         )

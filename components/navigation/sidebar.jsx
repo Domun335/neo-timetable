@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { Search, GraduationCap, Users, DoorOpen, ExternalLink } from 'lucide-react'
+import { useParams, usePathname } from 'next/navigation'
+import { Search, GraduationCap, Users, DoorOpen, ExternalLink, Sparkles } from 'lucide-react'
 import { schoolConfig } from '@/school.config'
 import { EntityList } from './entity-list'
 import { FavoritesList } from './favorites-list'
@@ -17,9 +17,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
+import { cn } from '@/lib/utils'
 
 export function Sidebar({ listData, timetableUrl }) {
   const params = useParams()
+  const pathname = usePathname()
   const currentType = params?.type || 'o'
   const [activeTab, setActiveTab] = useState(
     currentType === 'n' ? 'teachers' : currentType === 's' ? 'rooms' : 'classes',
@@ -79,12 +81,34 @@ export function Sidebar({ listData, timetableUrl }) {
           <PwaInstallButton variant="banner" />
         </div>
 
+        <div className="shrink-0 mb-2.5">
+          <Link
+            href="/wolne-sale"
+            className={cn(
+              'flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all border shadow-2xs group',
+              pathname === '/wolne-sale'
+                ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                : 'bg-muted/40 hover:bg-muted/80 text-foreground border-border/80 hover:border-border',
+            )}
+          >
+            <div className="flex items-center gap-2">
+              <DoorOpen
+                className={cn(
+                  'size-4 transition-transform group-hover:scale-110',
+                  pathname === '/wolne-sale' ? 'text-primary-foreground' : 'text-primary',
+                )}
+              />
+              <span>Wolne sale lekcyjne</span>
+            </div>
+          </Link>
+        </div>
+
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="flex-1 overflow-hidden flex flex-col gap-0"
         >
-          <TabsList className="grid grid-cols-[1fr_1.35fr_1fr] gap-1 p-1 rounded-xl bg-muted/60 border border-border/60 mb-2.5 shrink-0 text-xs w-full !h-auto group-data-horizontal/tabs:!h-auto">
+          <TabsList className="grid grid-cols-[1fr_1.35fr_1fr] gap-1 p-1 rounded-xl bg-muted/60 border border-border/60 mb-2.5 shrink-0 text-xs w-full h-auto! group-data-horizontal/tabs:h-auto!">
             <TabsTrigger
               value="classes"
               className="flex items-center justify-center gap-1 py-1.5 px-1.5 rounded-lg font-medium text-xs data-active:bg-background data-active:text-foreground data-active:shadow-xs h-auto"
