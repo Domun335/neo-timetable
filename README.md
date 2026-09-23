@@ -5,7 +5,7 @@
 # 🚀 NeoPlan - Nowoczesny Plan Lekcji
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black?style=flat&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.2-61dafb?style=flat&logo=react)](https://react.dev/)
+[![React](https://img.shields.io/badge/React-19.3-61dafb?style=flat&logo=react)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
 [![Base UI](https://img.shields.io/badge/Base_UI-1.8-111827?style=flat)](https://base-ui.com/)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat&logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
@@ -31,6 +31,10 @@ Działa z **dowolną szkołą** korzystającą z systemu Optivum - wystarczy pod
   - Kliknięcie nauczyciela w planie klasy przenosi do rozkładu tego nauczyciela.
   - Kliknięcie sali przenosi bezpośrednio do planu zajęć danej sali.
   - Kliknięcie oddziału w planie nauczyciela/sali przenosi do widoku klasy.
+- 🚪 **Wyszukiwarka wolnych sal lekcyjnych (`/wolne-sale`)**:
+  - Dedykowana tablica sprawdzania dostępności sal i pracowni lub dla wybranego dnia i godziny lekcyjnej.
+  - Błyskawiczny podgląd statusu: natychmiastowa lista wolnych sal oraz szczegółowe informacje o zajętych salach (klasa, przedmiot, nauczyciel) z bezpośrednim odnośnikiem do planu sali.
+  - Szybka wyszukiwarka konkretnych sal i pracowni.
 - 🔍 **Błyskawiczna wyszukiwarka (`Ctrl+K` / `Cmd+K`)**: Wyszukiwanie oddziałów, nauczycieli i sal odporne na wielkość liter, polskie znaki diakrytyczne (np. wpisanie `bialy` odnajdzie `T.BIAŁY`) oraz separatory (np. wpisanie `5ta` lub `5t a` bez problemu odnajdzie klasę `5T_A`).
 - ⭐ **Ulubione**: Możliwość przypięcia najważniejszych planów (gwiazdka) z natychmiastowym dostępem z paska bocznego i zapamiętywaniem w `localStorage`.
 - 📲 **PWA & Tryb Offline**: Dedykowany Service Worker z buforowaniem odwiedzonych planów, automatyczną rejestracją oraz natywnym monitorem instalacji na telefonach (iOS / Android) i komputerach.
@@ -174,13 +178,15 @@ export const schoolConfig = {
 ```text
 neo-timetable/
 ├── app/                        # Next.js App Router
-│   ├── [type]/[id]/            # Dynamiczny widok planu
+│   ├── [type]/[id]/            # Dynamiczny widok planu (oddział, nauczyciel, sala)
+│   ├── wolne-sale/             # Widok dostępności wolnych sal lekcyjnych
 │   ├── icons/                  # Dynamiczne generowanie ikon PWA (PNG)
 │   ├── apple-icon.jsx          # Ikona Apple Web App
 │   ├── layout.jsx              # Główny szablon, Sidebar, ThemeProvider
 │   ├── manifest.js             # Generator manifestu Web App (PWA)
 │   └── page.jsx                # Strona główna z automatycznym przekierowaniem
 ├── components/                 # Komponenty aplikacji
+│   ├── empty-rooms/            # Widok tablicy i filtrów wolnych sal (EmptyRoomsView)
 │   ├── navigation/             # Sidebar, MobileNav, SearchCommand, Ulubione
 │   ├── timetable/              # Widok tabeli, widok listy, komórki, filtry grup
 │   └── ui/                     # Komponenty Base UI / shadcn (Button, Dialog, Tabs itp.)
@@ -191,7 +197,7 @@ neo-timetable/
 │   └── use-pwa-install.js      # Kontrola instalacji aplikacji PWA
 ├── lib/                        # Moduły pomocnicze i parser
 │   ├── search-utils.js         # Normalizacja polskich znaków w wyszukiwaniu
-│   └── timetable/              # Pobieranie, mapowanie i kategoryzacja lekcji Optivum
+│   └── timetable/              # Parser Optivum, pobieranie lekcji i obłożenia sal
 ├── public/                     # Pliki statyczne, ikony i Service Worker (sw.js)
 ├── school.config.js            # Główny plik konfiguracyjny szkoły
 └── next.config.mjs             # Konfiguracja Next.js
