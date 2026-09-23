@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 
+if (!process.env.TIMETABLE_BASE_URL) {
+  throw new Error(
+    '[neo-timetable] Brak wymaganej zmiennej środowiskowej TIMETABLE_BASE_URL. ' +
+      'Ustaw ją w pliku .env lub w ustawieniach projektu (np. Vercel Environment Variables).',
+  )
+}
+
 const nextConfig = {
   poweredByHeader: false,
   async headers() {

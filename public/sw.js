@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request
   if (request.method !== 'GET') return
 
-  // Ignorujemy zapytania z innych domen lub rozszerzeń przeglądarki
+  // Obsługujemy tylko żądania z tego samego origin (wyklucza cross-origin i rozszerzenia przeglądarki)
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
 
@@ -55,7 +55,11 @@ self.addEventListener('fetch', (event) => {
       caches.match(request).then((cachedResponse) => {
         const fetchPromise = fetch(request)
           .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
+            if (
+              networkResponse &&
+              networkResponse.status === 200 &&
+              networkResponse.type !== 'opaque'
+            ) {
               const clone = networkResponse.clone()
               caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
             }

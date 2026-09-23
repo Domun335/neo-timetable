@@ -97,7 +97,6 @@ export function useGroupPreferences(type, id) {
     [type, groupsStorageKey],
   )
 
-  // Ustawia bazową grupę dla całej klasy (null oznacza brak podziału / wszystkie grupy)
   const setBaseGroup = useCallback(
     (groupNum) => {
       const num = typeof groupNum === 'number' ? groupNum : null
@@ -110,7 +109,6 @@ export function useGroupPreferences(type, id) {
     [setSelectedGroups],
   )
 
-  // Przypisuje wybraną grupę lub wariant dla konkretnego przedmiotu
   const setSubjectGroup = useCallback(
     (subject, groupVal) => {
       if (!subject) return
@@ -129,22 +127,11 @@ export function useGroupPreferences(type, id) {
     [setSelectedGroups],
   )
 
-  // Przywraca domyślną grupę bazową dla danego przedmiotu
   const clearSubjectOverride = useCallback(
-    (subject) => {
-      if (!subject) return
-      const current = selectedGroupsRef.current
-      const currentSubjects = { ...(current.subjects || {}) }
-      delete currentSubjects[subject]
-      setSelectedGroups({
-        base: current.base,
-        subjects: currentSubjects,
-      })
-    },
-    [setSelectedGroups],
+    (subject) => setSubjectGroup(subject, undefined),
+    [setSubjectGroup],
   )
 
-  // Czyści wszystkie wyjątki przedmiotowe przy zachowaniu grupy bazowej
   const resetAllOverrides = useCallback(() => {
     const current = selectedGroupsRef.current
     setSelectedGroups({
@@ -153,7 +140,6 @@ export function useGroupPreferences(type, id) {
     })
   }, [setSelectedGroups])
 
-  // Resetuje wszystkie preferencje (wszystkie grupy, brak wyjątków)
   const resetAll = useCallback(() => {
     setSelectedGroups(DEFAULT_PREFERENCES)
   }, [setSelectedGroups])

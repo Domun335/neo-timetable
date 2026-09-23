@@ -7,6 +7,18 @@ import { schoolConfig } from '@/school.config'
 export const revalidate = 3600 // ISR 1h
 
 /**
+ * Parsuje i waliduje parametry trasy { type, id }
+ * @param {{ type: string, id: string }} params
+ * @returns {{ cleanType: string, cleanId: string, isValid: boolean }}
+ */
+function parseParams(params) {
+  const cleanType = (params.type || '').toLowerCase()
+  const cleanId = String(params.id || '').replace(/^[ons]/i, '')
+  const isValid = ['o', 'n', 's'].includes(cleanType) && /^\d+$/.test(cleanId)
+  return { cleanType, cleanId, isValid }
+}
+
+/**
  * Pre-renderowanie ścieżek dla wszystkich klas, nauczycieli i sal
  */
 export async function generateStaticParams() {
@@ -29,11 +41,9 @@ export async function generateStaticParams() {
  * Generowanie metadanych SEO dla strony planu
  */
 export async function generateMetadata({ params }) {
-  const { type, id } = await params
-  const cleanType = (type || '').toLowerCase()
-  const cleanId = String(id || '').replace(/^[ons]/i, '')
+  const { cleanType, cleanId, isValid } = parseParams(await params)
 
-  if (!['o', 'n', 's'].includes(cleanType) || !/^\d+$/.test(cleanId)) {
+  if (!isValid) {
     return { title: 'Plan lekcji' }
   }
 
@@ -43,22 +53,20 @@ export async function generateMetadata({ params }) {
       timetable.type === 'o' ? 'Oddział' : timetable.type === 'n' ? 'Nauczyciel' : 'Sala'
 
     return {
-      title: `${timetable.title}`,
+      title: timetable.title,
       description: `Sprawdź aktualny plan lekcji dla ${typeLabel.toLowerCase()} ${timetable.title} w ${schoolConfig.shortName}.`,
     }
   } catch {
     return {
-      title: `Plan lekcji`,
+      title: 'Plan lekcji',
     }
   }
 }
 
 export default async function TimetablePage({ params }) {
-  const { type, id } = await params
-  const cleanType = (type || '').toLowerCase()
-  const cleanId = String(id || '').replace(/^[ons]/i, '')
+  const { cleanType, cleanId, isValid } = parseParams(await params)
 
-  if (!['o', 'n', 's'].includes(cleanType) || !/^\d+$/.test(cleanId)) {
+  if (!isValid) {
     notFound()
   }
 
@@ -70,7 +78,7 @@ export default async function TimetablePage({ params }) {
       notFound()
     }
 
-    console.error(`Błąd techniczny podczas ładowania planu ${type}/${id}:`, error)
+    console.error(`Błąd techniczny podczas ładowania planu ${cleanType}/${cleanId}:`, error)
     throw error
   }
 
