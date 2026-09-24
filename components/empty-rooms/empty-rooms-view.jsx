@@ -6,6 +6,7 @@ import { DoorOpen, Search, Check, CalendarDays, X, ArrowRight } from 'lucide-rea
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { timeToMinutes } from '@/hooks/use-current-lesson'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 
 export function EmptyRoomsView({ rooms = [], hours = [], dayNames = [] }) {
@@ -25,7 +26,6 @@ export function EmptyRoomsView({ rooms = [], hours = [], dayNames = [] }) {
     return () => clearInterval(timer)
   }, [])
 
-  // Domyślny dzień: dzisiaj (jeśli pon-pt) lub poniedziałek (jeśli weekend)
   const initialDayIndex = useMemo(() => {
     const now = new Date()
     const jsDay = now.getDay()
@@ -132,23 +132,25 @@ export function EmptyRoomsView({ rooms = [], hours = [], dayNames = [] }) {
           </p>
         </div>
 
-        {/* Status na żywo */}
-        {liveInfo && (
-          <div className="flex items-center gap-2 bg-card/70 border border-border/70 rounded-2xl px-3 py-2 shadow-xs backdrop-blur-md self-start sm:self-auto text-xs">
-            <span className="relative flex h-2.5 w-2.5 shrink-0">
-              {liveInfo.isLive && (
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-              )}
-              <span
-                className={cn(
-                  'relative inline-flex rounded-full h-2.5 w-2.5',
-                  liveInfo.isLive ? 'bg-emerald-500' : 'bg-muted-foreground/50',
+        <div className="flex items-center gap-2 no-print self-start sm:self-auto">
+          {liveInfo && (
+            <div className="flex items-center gap-2 bg-card/70 border border-border/70 rounded-2xl px-3 py-2 shadow-xs backdrop-blur-md text-xs">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
+                {liveInfo.isLive && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
                 )}
-              />
-            </span>
-            <span className="font-medium text-foreground">{liveInfo.text}</span>
-          </div>
-        )}
+                <span
+                  className={cn(
+                    'relative inline-flex rounded-full h-2.5 w-2.5',
+                    liveInfo.isLive ? 'bg-emerald-500' : 'bg-muted-foreground/50',
+                  )}
+                />
+              </span>
+              <span className="font-medium text-foreground">{liveInfo.text}</span>
+            </div>
+          )}
+          <ThemeToggle className="hidden lg:inline-flex" />
+        </div>
       </div>
 
       {/* Dni tygodnia */}

@@ -169,7 +169,7 @@ export function Sidebar({ listData, timetableUrl }) {
 
       <div className="p-3 border-t border-border/60 bg-muted/20 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <ThemeToggle className="lg:hidden inline-flex" />
           <PrintButton />
           <PwaInstallButton />
         </div>

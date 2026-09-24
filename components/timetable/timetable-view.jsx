@@ -13,6 +13,7 @@ import { useFavorites } from '@/hooks/use-favorites'
 import { useLastPath } from '@/hooks/use-last-path'
 import { useCurrentLesson } from '@/hooks/use-current-lesson'
 import { useGroupPreferences } from '@/hooks/use-group-preferences'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export function TimetableView({ timetable }) {
   const { type, id, title, hours, rawDays, availableGroups, subjectGroups = [] } = timetable
@@ -103,6 +104,7 @@ export function TimetableView({ timetable }) {
 
         <div className="flex items-center gap-2 no-print self-start sm:self-auto">
           <CurrentLessonBadge hours={hours} currentInfo={currentInfo} />
+          <ThemeToggle className="hidden lg:inline-flex" />
         </div>
       </div>
 
