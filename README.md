@@ -9,10 +9,13 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
 [![Base UI](https://img.shields.io/badge/Base_UI-1.8-111827?style=flat)](https://base-ui.com/)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat&logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+[![Użytkownicy](https://img.shields.io/badge/Użytkownicy-Kilkuset%20uczniów%20ZS2%20Łańcut-success?style=flat&logo=affinitydesigner)](https://github.com/Domun335/neo-timetable)
 
-**NeoPlan** to nowoczesna, responsywna i błyskawiczna aplikacja internetowa zastępująca przestarzały, tradycyjny interfejs planów lekcji **VULCAN Optivum**.
+**NeoPlan** to nowoczesna, responsywna i błyskawiczna aplikacja internetowa zastępująca przestarzały, tradycyjny interfejs planów lekcji **VULCAN Optivum**. 
 
-Działa z **dowolną szkołą** korzystającą z systemu Optivum - wystarczy podać link do planu w konfiguracji.
+Projekt wdrożony w praktyce - **na co dzień korzysta z niego już kilkuset uczniów Zespołu Szkół Nr 2 im. Jana Kochanowskiego w Łańcucie**.
+
+> 💡 **Uniwersalność:** Choć aplikacja powstała i została przetestowana z myślą o społeczności ZS2 w Łańcucie, działa z **dowolną szkołą w Polsce** korzystającą z systemu Optivum - wystarczy podać link do planu w konfiguracji.
 
 ---
 
@@ -106,7 +109,7 @@ npm start
 
 Projekt jest w pełni zoptymalizowany pod platformę **Vercel** (App Router, Turbopack, Edge Caching, SSG/ISR).
 
-### Opcja A: Wdrożenie przez Vercel Dashboard (Zalecane)
+### Wdrożenie przez Vercel Dashboard (Zalecane)
 
 1. Umieść swój projekt w repozytorium GitHub / GitLab / Bitbucket.
 2. Zaloguj się na [vercel.com](https://vercel.com) i kliknij **"Add New..."** -> **"Project"**.
