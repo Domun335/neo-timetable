@@ -208,10 +208,24 @@ export function LessonCell({
         return (
           <div
             key={idx}
-            className="flex flex-col gap-1 rounded-xl p-2.5 border border-border/70 bg-card/85 shadow-2xs transition-all duration-150 hover:shadow-xs hover:border-primary/50"
+            className={cn(
+              'flex rounded-xl border border-border/70 bg-card/85 shadow-2xs transition-all duration-150 hover:shadow-xs hover:border-primary/50',
+              visibleLessons.length > 1
+                ? 'flex-wrap items-center gap-x-1.5 gap-y-1 px-2.5 py-1.5'
+                : 'flex-col gap-1 px-3.5 py-2.5',
+            )}
           >
-            <div className="flex items-start justify-between gap-1">
-              <span className="font-bold text-xs text-foreground leading-snug line-clamp-2">
+            <div
+              className={
+                visibleLessons.length > 1 ? 'contents' : 'flex items-start justify-between gap-1'
+              }
+            >
+              <span
+                className={cn(
+                  'font-bold text-xs text-foreground leading-snug',
+                  visibleLessons.length > 1 ? 'line-clamp-1' : 'line-clamp-2',
+                )}
+              >
                 {lesson.subject}
               </span>
               {hasGroup &&
@@ -270,7 +284,14 @@ export function LessonCell({
                 ))}
             </div>
 
-            <div className="flex items-center gap-1.5 flex-wrap text-[11px] text-muted-foreground pt-0.5">
+            <div
+              className={cn(
+                'text-[11px] text-muted-foreground',
+                visibleLessons.length > 1
+                  ? 'contents'
+                  : 'flex items-center gap-1.5 flex-wrap pt-0.5',
+              )}
+            >
               {lesson.teacher &&
                 currentType !== 'n' &&
                 (lesson.teacherId ? (
