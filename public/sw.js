@@ -1,4 +1,4 @@
-const CACHE_NAME = 'neoplan-cache-v2'
+const CACHE_NAME = 'neoplan-cache-v3'
 const OFFLINE_FALLBACK_PATH = '/__offline'
 
 const PRECACHE_ASSETS = [
@@ -17,7 +17,7 @@ const OFFLINE_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Offline \u2014 NeoPlan</title>
+  <title>Offline — NeoPlan</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:system-ui,-apple-system,sans-serif;min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#e2e8f0;padding:1.5rem}
@@ -37,10 +37,15 @@ const OFFLINE_HTML = `<!DOCTYPE html>
         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.5 6.5a7.5 7.5 0 017.038 4.876M4.002 8.626a7.5 7.5 0 012.498-2.126M7.5 14.5a4.5 4.5 0 015.124-1.124M12 18h.01"/>
       </svg>
     </div>
-    <h1>Brak po\u0142\u0105czenia z internetem</h1>
-    <p>Ta strona nie by\u0142a jeszcze odwiedzona i nie jest zapisana w pami\u0119ci podr\u0119cznej. Po\u0142\u0105cz si\u0119 z internetem, a nast\u0119pnym razem b\u0119dzie dost\u0119pna offline.</p>
-    <button onclick="location.reload()">Spr\xf3buj ponownie</button>
+    <h1>Brak połączenia z internetem</h1>
+    <p>Ta strona nie była jeszcze odwiedzona i nie jest zapisana w pamięci podręcznej. Połącz się z internetem, a następnym razem będzie dostępna offline.</p>
+    <button onclick="location.reload()">Spróbuj ponownie</button>
   </div>
+  <script>
+    window.addEventListener('online', function() {
+      location.reload();
+    });
+  </script>
 </body>
 </html>`
 
@@ -94,15 +99,19 @@ self.addEventListener('fetch', (event) => {
 
   if (url.pathname.startsWith('/_next/static/')) {
     event.respondWith(
-      caches.match(request).then((cached) => {
+      caches.open(CACHE_NAME).then(async (cache) => {
+        const cached = await cache.match(request)
         if (cached) return cached
-        return fetch(request).then((response) => {
+
+        try {
+          const response = await fetch(request)
           if (response && response.status === 200) {
-            const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+            cache.put(request, response.clone())
           }
           return response
-        })
+        } catch {
+          return new Response('', { status: 408, statusText: 'Request Timeout' })
+        }
       }),
     )
     return
@@ -116,7 +125,8 @@ self.addEventListener('fetch', (event) => {
 
   if (isStaticAsset) {
     event.respondWith(
-      caches.match(request).then((cachedResponse) => {
+      caches.open(CACHE_NAME).then(async (cache) => {
+        const cachedResponse = await cache.match(request)
         const fetchPromise = fetch(request)
           .then((networkResponse) => {
             if (
@@ -124,8 +134,7 @@ self.addEventListener('fetch', (event) => {
               networkResponse.status === 200 &&
               networkResponse.type !== 'opaque'
             ) {
-              const clone = networkResponse.clone()
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+              cache.put(request, networkResponse.clone())
             }
             return networkResponse
           })
@@ -137,12 +146,12 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  const isNavigation =
-    request.headers.get('accept')?.includes('text/html') ||
+  const isRSC =
     request.headers.get('RSC') === '1' ||
-    request.headers.get('Next-Router-Prefetch') === '1'
+    request.headers.get('Next-Router-Prefetch') === '1' ||
+    url.searchParams.has('_rsc')
 
-  if (isNavigation) {
+  if (isRSC) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME)
@@ -151,23 +160,83 @@ self.addEventListener('fetch', (event) => {
           const networkResponse = await fetch(request)
           if (networkResponse && networkResponse.status === 200) {
             cache.put(request, networkResponse.clone())
+
+            if (url.pathname !== '/' && !url.pathname.startsWith('/api/')) {
+              const htmlRequest = new Request(url.pathname, {
+                headers: { Accept: 'text/html' },
+              })
+              event.waitUntil(
+                cache
+                  .match(htmlRequest)
+                  .then((existing) => {
+                    if (!existing) {
+                      return fetch(htmlRequest).then((htmlRes) => {
+                        if (htmlRes && htmlRes.status === 200) {
+                          return cache.put(htmlRequest, htmlRes)
+                        }
+                      })
+                    }
+                  })
+                  .catch(() => {}),
+              )
+            }
           }
           return networkResponse
         } catch {
-          const cachedResponse = await cache.match(request)
-          if (cachedResponse) return cachedResponse
-
-          if (request.headers.get('accept')?.includes('text/html')) {
-            const cachedHome = await cache.match('/')
-            if (cachedHome) return cachedHome
-
-            const offlinePage = await cache.match(OFFLINE_FALLBACK_PATH)
-            if (offlinePage) return offlinePage
+          const cachedRSC = await cache.match(request, { ignoreVary: true, ignoreSearch: true })
+          if (cachedRSC) {
+            return cachedRSC
           }
 
-          return new Response('Brak połączenia z siecią.', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+          throw new TypeError('Brak połączenia: zasób RSC nie jest zapisany w pamięci podręcznej')
+        }
+      })(),
+    )
+    return
+  }
+
+  const isHtmlNavigation =
+    request.mode === 'navigate' ||
+    (request.headers.get('accept') && request.headers.get('accept').includes('text/html'))
+
+  if (isHtmlNavigation) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME)
+
+        try {
+          const networkResponse = await fetch(request)
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(request, networkResponse.clone())
+            if (url.pathname !== '/') {
+              cache.put(new Request(url.pathname), networkResponse.clone())
+            }
+          }
+          return networkResponse
+        } catch {
+          let cachedResponse = await cache.match(request, { ignoreVary: true, ignoreSearch: true })
+          if (cachedResponse) {
+            return cachedResponse
+          }
+
+          cachedResponse = await cache.match(url.pathname, { ignoreVary: true, ignoreSearch: true })
+          if (cachedResponse) {
+            return cachedResponse
+          }
+
+          if (url.pathname === '/') {
+            const cachedHome = await cache.match('/')
+            if (cachedHome) return cachedHome
+          }
+
+          const offlinePage = await cache.match(OFFLINE_FALLBACK_PATH)
+          if (offlinePage) {
+            return offlinePage
+          }
+
+          return new Response(OFFLINE_HTML, {
+            status: 200,
+            headers: { 'Content-Type': 'text/html; charset=utf-8' },
           })
         }
       })(),
@@ -176,23 +245,18 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(request)
-      .then((response) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
+      try {
+        const response = await fetch(request)
         if (response && response.status === 200) {
-          const clone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          cache.put(request, response.clone())
         }
         return response
-      })
-      .catch(async () => {
-        const cached = await caches.match(request)
-        return (
-          cached ||
-          new Response('Offline', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-          })
-        )
-      }),
+      } catch {
+        const cached = await cache.match(request, { ignoreVary: true })
+        if (cached) return cached
+        throw new TypeError('Failed to fetch: offline')
+      }
+    }),
   )
 })

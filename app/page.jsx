@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { schoolConfig } from '@/school.config'
 import { useLastPath } from '@/hooks/use-last-path'
 import { useFavorites } from '@/hooks/use-favorites'
+import { useOnlineStatus } from '@/hooks/use-online-status'
 
 /**
  * Strona startowa aplikacji — automatyczne przekierowanie do ostatnio oglądanego planu,
@@ -15,12 +16,15 @@ export default function HomePage() {
   const router = useRouter()
   const { getLastPath } = useLastPath()
   const { favorites, isLoaded } = useFavorites()
+  const isOnline = useOnlineStatus()
+  const hasRedirected = useRef(false)
 
   useEffect(() => {
-    if (!isLoaded) return
+    if (!isLoaded || hasRedirected.current) return
 
     const lastPath = getLastPath()
     if (typeof lastPath === 'string' && /^\/(o|n|s)\/\d+$/.test(lastPath)) {
+      hasRedirected.current = true
       router.replace(lastPath)
       return
     }
@@ -28,11 +32,13 @@ export default function HomePage() {
     if (favorites && favorites.length > 0) {
       const firstFav = favorites[0]
       if (['o', 'n', 's'].includes(firstFav?.type) && /^\d+$/.test(String(firstFav?.id))) {
+        hasRedirected.current = true
         router.replace(`/${firstFav.type}/${firstFav.id}`)
         return
       }
     }
 
+    hasRedirected.current = true
     router.replace('/o/1')
   }, [isLoaded, getLastPath, favorites, router])
 
@@ -52,7 +58,9 @@ export default function HomePage() {
 
         <div className="space-y-1">
           <h2 className="text-lg font-bold text-foreground">{schoolConfig.shortName}</h2>
-          <p className="text-xs text-muted-foreground">Ładowanie planu lekcji...</p>
+          <p className="text-xs text-muted-foreground">
+            {!isOnline ? 'Brak połączenia z siecią' : 'Ładowanie planu lekcji...'}
+          </p>
         </div>
       </div>
     </div>
