@@ -9,9 +9,8 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
 [![Base UI](https://img.shields.io/badge/Base_UI-1.8-111827?style=flat)](https://base-ui.com/)
 [![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat&logo=pwa)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
-[![Użytkownicy](https://img.shields.io/badge/Użytkownicy-Kilkuset%20uczniów%20ZS2%20Łańcut-success?style=flat&logo=affinitydesigner)](https://github.com/Domun335/neo-timetable)
 
-**NeoPlan** to nowoczesna, responsywna i błyskawiczna aplikacja internetowa zastępująca przestarzały, tradycyjny interfejs planów lekcji **VULCAN Optivum**. 
+**NeoPlan** to nowoczesna, responsywna i błyskawiczna aplikacja internetowa zastępująca przestarzały, tradycyjny interfejs planów lekcji **VULCAN Optivum**.
 
 Projekt wdrożony w praktyce - **na co dzień korzysta z niego już kilkuset uczniów Zespołu Szkół Nr 2 im. Jana Kochanowskiego w Łańcucie**.
 
