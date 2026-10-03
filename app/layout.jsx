@@ -8,6 +8,7 @@ import { SearchCommand } from '@/components/navigation/search-command'
 import { PwaInstructionsModal } from '@/components/pwa-instructions-modal'
 import { PwaRegister } from '@/components/pwa-register'
 import { PrintThemeHandler } from '@/components/print-theme-handler'
+import { OfflineBanner } from '@/components/offline-banner'
 import { fetchTimetableList } from '@/lib/timetable/fetch-list.js'
 import { schoolConfig } from '@/school.config'
 
@@ -67,6 +68,7 @@ export default async function RootLayout({ children }) {
               <MobileNav listData={listData} timetableUrl={schoolConfig.timetableUrl} />
               <Sidebar listData={listData} timetableUrl={schoolConfig.timetableUrl} />
               <main className="flex-1 flex flex-col min-w-0 pb-24 md:pb-6 overflow-x-hidden">
+                <OfflineBanner />
                 {children}
               </main>
             </div>

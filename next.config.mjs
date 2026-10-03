@@ -9,6 +9,9 @@ if (!process.env.TIMETABLE_BASE_URL) {
 
 const nextConfig = {
   poweredByHeader: false,
+  experimental: {
+    useOffline: true,
+  },
   async headers() {
     return [
       {
@@ -47,6 +50,23 @@ const nextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
             ].join('; '),
+          },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript; charset=utf-8',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Service-Worker-Allowed',
+            value: '/',
           },
         ],
       },

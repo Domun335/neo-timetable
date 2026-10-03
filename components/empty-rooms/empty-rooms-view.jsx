@@ -6,16 +6,16 @@ import { DoorOpen, Search, Check, CalendarDays, X, ArrowRight } from 'lucide-rea
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { timeToMinutes } from '@/hooks/use-current-lesson'
+import { useIsMounted } from '@/hooks/use-is-mounted'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 
 export function EmptyRoomsView({ rooms = [], hours = [], dayNames = [] }) {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useIsMounted()
   const [currentTimeMinutes, setCurrentTimeMinutes] = useState(0)
   const [currentJsDay, setCurrentJsDay] = useState(1)
 
   useEffect(() => {
-    setMounted(true)
     const updateTime = () => {
       const now = new Date()
       setCurrentTimeMinutes(now.getHours() * 60 + now.getMinutes())
@@ -36,7 +36,7 @@ export function EmptyRoomsView({ rooms = [], hours = [], dayNames = [] }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   // Wykrywanie trwającej aktualnie lekcji lub przerwy
-  const liveInfo = useMemo(() => {
+  const liveInfo = (() => {
     if (!mounted || hours.length === 0) return null
 
     const todayIndex = currentJsDay >= 1 && currentJsDay <= 5 ? currentJsDay - 1 : -1
@@ -85,7 +85,7 @@ export function EmptyRoomsView({ rooms = [], hours = [], dayNames = [] }) {
       currentLessonNumber: null,
       text: 'Po lekcjach',
     }
-  }, [mounted, currentTimeMinutes, currentJsDay, hours])
+  })()
 
   const isTodaySelected =
     mounted && currentJsDay >= 1 && currentJsDay <= 5 && currentJsDay - 1 === selectedDayIndex

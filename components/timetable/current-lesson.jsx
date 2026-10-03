@@ -10,7 +10,7 @@ export function CurrentLessonBadge({ hours, currentInfo: passedCurrentInfo }) {
   const currentInfo = passedCurrentInfo || hookCurrentInfo
 
   if (!currentInfo?.isMounted || !currentInfo?.badgeText) {
-    return <div className="h-7" />
+    return null
   }
 
   const getStatusConfig = () => {
@@ -63,12 +63,12 @@ export function CurrentLessonBadge({ hours, currentInfo: passedCurrentInfo }) {
     <Badge
       variant="outline"
       className={cn(
-        'h-auto cursor-default px-2.5 sm:px-3 py-1 sm:py-1.5 gap-1.5 sm:gap-2 rounded-full font-medium text-xs shadow-2xs transition-all max-w-full truncate',
+        'h-auto cursor-default px-2 sm:px-3 py-0.5 sm:py-1.5 gap-1 sm:gap-2 rounded-full font-medium text-[11px] sm:text-xs shadow-2xs transition-all shrink-0 max-w-full',
         color,
       )}
     >
-      <span className={cn('size-2 rounded-full shrink-0', dot)} />
-      <Icon className="size-3.5 shrink-0" />
+      <span className={cn('size-1.5 sm:size-2 rounded-full shrink-0', dot)} />
+      <Icon className="size-3 sm:size-3.5 shrink-0" />
       <span className="font-semibold truncate">{currentInfo.badgeText}</span>
     </Badge>
   )

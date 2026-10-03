@@ -135,81 +135,48 @@ export const TimetableList = memo(
 
     return (
       <div
-        className="w-full flex flex-col gap-3 select-none touch-pan-y"
+        className="w-full flex flex-col gap-2 select-none touch-pan-y"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="flex flex-col gap-1.5 w-full">
-          <Tabs
-            value={String(selectedDayIndex)}
-            onValueChange={(val) => setUserSelectedDayIndex(Number(val))}
-            className="w-full"
-          >
-            <TabsList className="grid grid-cols-5 w-full h-auto! p-1 rounded-xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
-              {dayNames.map((dayName, idx) => {
-                const isToday = currentInfo.isSchoolDay && currentInfo.currentDayIndex === idx
-                const isSelected = selectedDayIndex === idx
+        <Tabs
+          value={String(selectedDayIndex)}
+          onValueChange={(val) => setUserSelectedDayIndex(Number(val))}
+          className="w-full"
+        >
+          <TabsList className="grid grid-cols-5 w-full h-auto! p-1 rounded-xl bg-muted/50 border border-border/70 shadow-2xs gap-1">
+            {dayNames.map((dayName, idx) => {
+              const isToday = currentInfo.isSchoolDay && currentInfo.currentDayIndex === idx
+              const isSelected = selectedDayIndex === idx
 
-                return (
-                  <TabsTrigger
-                    key={idx}
-                    value={String(idx)}
-                    className={cn(
-                      'flex items-center justify-center h-8 px-1 rounded-lg text-xs font-semibold relative transition-all active:scale-95 border',
-                      isSelected
-                        ? 'bg-background text-foreground font-bold shadow-2xs border-border/70'
-                        : isToday
-                          ? 'border-primary/50 text-primary dark:text-primary bg-primary/5 font-semibold hover:bg-primary/10'
-                          : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-background/40',
-                    )}
-                  >
-                    <span className="text-xs">{shortDayNames[idx] || dayName.slice(0, 3)}</span>
-                  </TabsTrigger>
-                )
-              })}
-            </TabsList>
-          </Tabs>
-
-          <div className="flex items-center justify-between px-1 text-xs text-muted-foreground">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled={selectedDayIndex === 0}
-              onClick={() => setUserSelectedDayIndex(Math.max(0, selectedDayIndex - 1))}
-              className="size-7 rounded-lg text-muted-foreground disabled:opacity-30 active:scale-95"
-              aria-label="Poprzedni dzień"
-            >
-              <ChevronLeft className="size-4" />
-            </Button>
-
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold text-foreground text-xs">
-                {dayNames[selectedDayIndex]}
-              </span>
-              {isCurrentDay && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] font-bold px-1.5 py-0 h-4 rounded-full bg-primary/15 text-primary border-transparent"
+              return (
+                <TabsTrigger
+                  key={idx}
+                  value={String(idx)}
+                  className={cn(
+                    'flex items-center justify-center gap-1 h-8 px-1 rounded-lg text-xs font-semibold relative transition-all active:scale-95 border',
+                    isSelected
+                      ? 'bg-background text-foreground font-bold shadow-2xs border-border/70'
+                      : isToday
+                        ? 'border-primary/40 text-primary dark:text-primary bg-primary/5 font-semibold hover:bg-primary/10'
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-background/40',
+                  )}
                 >
-                  Dziś
-                </Badge>
-              )}
-            </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              disabled={selectedDayIndex === 4}
-              onClick={() => setUserSelectedDayIndex(Math.min(4, selectedDayIndex + 1))}
-              className="size-7 rounded-lg text-muted-foreground disabled:opacity-30 active:scale-95"
-              aria-label="Następny dzień"
-            >
-              <ChevronRight className="size-4" />
-            </Button>
-          </div>
-        </div>
+                  <span className="text-xs">{shortDayNames[idx] || dayName.slice(0, 3)}</span>
+                  {isToday && (
+                    <span
+                      className={cn(
+                        'size-1.5 rounded-full shrink-0',
+                        isSelected ? 'bg-primary' : 'bg-primary/80 animate-pulse',
+                      )}
+                      title="Dzisiaj"
+                    />
+                  )}
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+        </Tabs>
 
         {!hasAnyLessonsThisDay ? (
           <Empty className="border border-dashed border-border/70 bg-muted/20 p-8 rounded-3xl animate-in fade-in zoom-in-95 duration-200">

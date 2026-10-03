@@ -56,9 +56,9 @@ export function GroupFilter({
       <div
         role="group"
         aria-label="Wybór grupy lekcyjnej"
-        className="inline-flex items-center p-1 rounded-xl bg-muted/60 border border-border/60 gap-1 text-xs font-semibold shadow-2xs shrink-0"
+        className="inline-flex items-center p-0.5 sm:p-1 rounded-lg sm:rounded-xl bg-muted/60 border border-border/60 gap-0.5 sm:gap-1 text-xs font-semibold shadow-2xs shrink-0"
       >
-        <span className="text-[11px] font-medium text-muted-foreground pl-2 sm:pl-2.5 pr-1 select-none">
+        <span className="text-[10px] sm:text-[11px] font-medium text-muted-foreground pl-1.5 sm:pl-2.5 pr-0.5 sm:pr-1 select-none">
           <span className="sm:hidden">Gr:</span>
           <span className="hidden sm:inline">Grupy:</span>
         </span>
@@ -69,7 +69,7 @@ export function GroupFilter({
           aria-pressed={currentBase === null && overridesCount === 0}
           onClick={() => handleSelectBase(null)}
           className={cn(
-            'px-2.5 sm:px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer',
+            'px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all active:scale-95 cursor-pointer',
             currentBase === null && overridesCount === 0
               ? 'bg-background text-foreground shadow-2xs'
               : 'text-muted-foreground hover:text-foreground',
@@ -88,7 +88,7 @@ export function GroupFilter({
               aria-pressed={isBaseSelected}
               onClick={() => handleSelectBase(num)}
               className={cn(
-                'min-w-7.5 px-2.5 sm:px-3 py-1.5 rounded-lg transition-all active:scale-95 cursor-pointer text-center',
+                'min-w-6.5 sm:min-w-7.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all active:scale-95 cursor-pointer text-center',
                 isBaseSelected
                   ? 'bg-primary text-primary-foreground shadow-2xs'
                   : 'text-muted-foreground hover:text-foreground',
@@ -109,13 +109,13 @@ export function GroupFilter({
           title="Dostosuj przedmioty"
           onClick={() => setIsCustomizerOpen(true)}
           className={cn(
-            'h-8.5 px-2.5 sm:px-3 rounded-xl text-xs font-medium gap-1.5 transition-all shadow-2xs border-border/60 shrink-0',
+            'h-7.5 sm:h-8.5 px-2 sm:px-3 rounded-lg sm:rounded-xl text-xs font-medium gap-1 sm:gap-1.5 transition-all shadow-2xs border-border/60 shrink-0',
             overridesCount > 0
               ? 'bg-primary/10 border-primary/40 text-primary hover:bg-primary/20 font-semibold'
               : 'bg-card/70 hover:bg-muted text-muted-foreground hover:text-foreground',
           )}
         >
-          <SlidersHorizontal className="size-3.5 shrink-0" />
+          <SlidersHorizontal className="size-3 sm:size-3.5 shrink-0" />
           <span className="hidden min-[375px]:inline">
             Dostosuj<span className="hidden sm:inline"> przedmioty</span>
           </span>

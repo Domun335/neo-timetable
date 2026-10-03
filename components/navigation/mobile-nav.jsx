@@ -86,18 +86,18 @@ export function MobileNav({ listData, timetableUrl }) {
 
   return (
     <>
-      <header className="no-print md:hidden sticky top-0 z-30 w-full border-b border-border/60 bg-background/85 backdrop-blur-xl px-3.5 py-2.5 flex items-center justify-between transition-all shadow-2xs">
-        <div className="flex items-center gap-2.5 min-w-0">
+      <header className="no-print md:hidden sticky top-0 z-30 w-full border-b border-border/60 bg-background/85 backdrop-blur-xl px-3 py-1.5 flex items-center justify-between transition-all shadow-2xs">
+        <div className="flex items-center gap-2 min-w-0">
           <Link
             href="/"
             className="flex items-center gap-2 min-w-0 group active:scale-98 transition-transform"
           >
-            <div className="size-8 shrink-0 rounded-xl overflow-hidden ring-1 ring-border/50 bg-muted/40 p-0.5 shadow-2xs">
+            <div className="size-7.5 shrink-0 rounded-lg overflow-hidden ring-1 ring-border/50 bg-muted/40 p-0.5 shadow-2xs">
               <Image
                 src={schoolConfig.branding?.logo || '/logo.svg'}
                 alt={schoolConfig.shortName}
-                width={32}
-                height={32}
+                width={28}
+                height={28}
                 className="size-full object-contain"
                 priority
               />
@@ -113,24 +113,24 @@ export function MobileNav({ listData, timetableUrl }) {
           </Link>
         </div>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 shrink-0">
           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={openSearch}
-            className="size-8.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 active:scale-95 transition-all"
+            className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 active:scale-95 transition-all"
             aria-label="Szukaj w planie"
           >
             <Search className="size-4" />
           </Button>
 
-          <ThemeToggle />
+          <ThemeToggle className="size-8 rounded-lg" />
 
           <Link
             href="/wolne-sale"
             className={cn(
-              'size-8.5 inline-flex items-center justify-center rounded-xl border border-border/60 bg-card/60 backdrop-blur-md shadow-xs text-muted-foreground transition-all hover:scale-105 hover:text-primary hover:border-primary/40 active:scale-95',
+              'size-8 inline-flex items-center justify-center rounded-lg border border-border/60 bg-card/60 backdrop-blur-md shadow-xs text-muted-foreground transition-all hover:scale-105 hover:text-primary hover:border-primary/40 active:scale-95',
               pathname === '/wolne-sale' && 'border-primary/50 text-primary bg-primary/10',
             )}
             aria-label="Wolne sale lekcyjne"
@@ -144,7 +144,7 @@ export function MobileNav({ listData, timetableUrl }) {
             variant="ghost"
             size="icon"
             onClick={() => setIsDrawerOpen(true)}
-            className="size-8.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/80 active:scale-95 transition-all"
+            className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 active:scale-95 transition-all"
             aria-label="Otwórz katalog i menu"
           >
             <Menu className="size-4.5" />
