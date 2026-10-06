@@ -3,11 +3,9 @@
 import { useState, useRef, useEffect, memo } from 'react'
 import { LessonCell } from './lesson-cell'
 import { useCurrentLesson } from '@/hooks/use-current-lesson'
-import { Coffee, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Coffee } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { isLessonVisible } from '@/lib/timetable/group-utils'
 import { cn } from '@/lib/utils'
 
@@ -211,15 +209,15 @@ export const TimetableList = memo(
                 return (
                   <div
                     key={hourKey}
-                    className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-dashed border-border/60 bg-muted/20 text-xs text-muted-foreground"
+                    className="flex items-center justify-between px-3.5 py-2 rounded-xl border border-dashed border-border/50 bg-muted/15 text-xs text-muted-foreground/80"
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex size-6 items-center justify-center rounded-lg bg-muted/80 text-[11px] font-bold text-foreground/70">
+                    <div className="flex items-center gap-2">
+                      <span className="flex size-5.5 items-center justify-center rounded-md bg-muted/60 text-[10px] font-semibold text-muted-foreground">
                         {hourObj.number}
                       </span>
-                      <span className="font-medium text-[11px]">Okienko / Wolna godzina</span>
+                      <span className="text-[11px]">Wolna godzina</span>
                     </div>
-                    <span className="font-mono text-[11px] text-muted-foreground/70">
+                    <span className="font-mono text-[11px] text-muted-foreground/60">
                       {hourObj.timeFrom} &ndash; {hourObj.timeTo}
                     </span>
                   </div>
@@ -233,36 +231,40 @@ export const TimetableList = memo(
                   className={cn(
                     'rounded-2xl border p-3.5 transition-all shadow-2xs',
                     isCurrentPeriod
-                      ? 'border-primary/80 bg-primary/4 ring-2 ring-primary/30 shadow-xs'
-                      : 'border-border/70 bg-card/85',
+                      ? 'border-l-4 border-l-primary border-border bg-primary/4 shadow-xs'
+                      : 'border-border/80 bg-card/85',
                   )}
                 >
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/40">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
                     <div className="flex items-center gap-2">
                       <span
                         className={cn(
-                          'flex size-6.5 items-center justify-center rounded-lg text-xs font-black shadow-2xs',
+                          'flex size-6 items-center justify-center rounded-lg text-xs font-bold transition-colors',
                           isCurrentPeriod
-                            ? 'bg-primary text-primary-foreground ring-1 ring-primary/40'
-                            : 'bg-muted text-foreground/85',
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground font-semibold',
                         )}
                       >
                         {hourObj.number}
                       </span>
 
-                      <span className="text-xs font-mono font-medium text-muted-foreground">
+                      <span
+                        className={cn(
+                          'text-xs font-mono',
+                          isCurrentPeriod
+                            ? 'font-bold text-foreground'
+                            : 'font-medium text-muted-foreground',
+                        )}
+                      >
                         {hourObj.timeFrom} &ndash; {hourObj.timeTo}
                       </span>
                     </div>
 
                     {isCurrentPeriod && (
-                      <Badge
-                        variant="default"
-                        className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border-transparent animate-pulse flex items-center gap-1"
-                      >
-                        <span className="size-1.5 rounded-full bg-primary" />
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary">
+                        <span className="size-1.5 rounded-full bg-primary animate-pulse" />
                         <span>Trwa teraz</span>
-                      </Badge>
+                      </span>
                     )}
                   </div>
 

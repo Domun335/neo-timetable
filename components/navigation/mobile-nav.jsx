@@ -113,31 +113,8 @@ export function MobileNav({ listData, timetableUrl }) {
           </Link>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={openSearch}
-            className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 active:scale-95 transition-all"
-            aria-label="Szukaj w planie"
-          >
-            <Search className="size-4" />
-          </Button>
-
+        <div className="flex items-center gap-1.5 shrink-0">
           <ThemeToggle className="size-8 rounded-lg" />
-
-          <Link
-            href="/wolne-sale"
-            className={cn(
-              'size-8 inline-flex items-center justify-center rounded-lg border border-border/60 bg-card/60 backdrop-blur-md shadow-xs text-muted-foreground transition-all hover:scale-105 hover:text-primary hover:border-primary/40 active:scale-95',
-              pathname === '/wolne-sale' && 'border-primary/50 text-primary bg-primary/10',
-            )}
-            aria-label="Wolne sale lekcyjne"
-            title="Wolne sale lekcyjne"
-          >
-            <DoorOpen className="size-4" />
-          </Link>
 
           <Button
             type="button"
@@ -145,7 +122,7 @@ export function MobileNav({ listData, timetableUrl }) {
             size="icon"
             onClick={() => setIsDrawerOpen(true)}
             className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 active:scale-95 transition-all"
-            aria-label="Otwórz katalog i menu"
+            aria-label="Otwórz katalog planów"
           >
             <Menu className="size-4.5" />
           </Button>
@@ -162,7 +139,7 @@ export function MobileNav({ listData, timetableUrl }) {
             onClick={handlePlanClick}
             className={cn(
               'flex flex-col items-center justify-center gap-1 py-1 px-2 rounded-xl transition-all active:scale-95',
-              isTimetableActive
+              isTimetableActive && pathname !== '/wolne-sale'
                 ? 'text-primary font-bold'
                 : 'text-muted-foreground hover:text-foreground font-medium',
             )}
@@ -170,7 +147,7 @@ export function MobileNav({ listData, timetableUrl }) {
             <div
               className={cn(
                 'flex items-center justify-center size-7 rounded-lg transition-all',
-                isTimetableActive && 'bg-primary/10 text-primary',
+                isTimetableActive && pathname !== '/wolne-sale' && 'bg-primary/10 text-primary',
               )}
             >
               <CalendarDays className="size-4.5" />
@@ -188,6 +165,26 @@ export function MobileNav({ listData, timetableUrl }) {
             </div>
             <span className="text-[10px] tracking-tight">Szukaj</span>
           </button>
+
+          <Link
+            href="/wolne-sale"
+            className={cn(
+              'flex flex-col items-center justify-center gap-1 py-1 px-2 rounded-xl transition-all active:scale-95',
+              pathname === '/wolne-sale'
+                ? 'text-primary font-bold'
+                : 'text-muted-foreground hover:text-foreground font-medium',
+            )}
+          >
+            <div
+              className={cn(
+                'flex items-center justify-center size-7 rounded-lg transition-all',
+                pathname === '/wolne-sale' && 'bg-primary/10 text-primary',
+              )}
+            >
+              <DoorOpen className="size-4.5" />
+            </div>
+            <span className="text-[10px] tracking-tight">Wolne sale</span>
+          </Link>
 
           <button
             type="button"
@@ -211,17 +208,6 @@ export function MobileNav({ listData, timetableUrl }) {
               )}
             </div>
             <span className="text-[10px] tracking-tight">Ulubione</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsDrawerOpen(true)}
-            className="flex flex-col items-center justify-center gap-1 py-1 px-2 rounded-xl text-muted-foreground hover:text-foreground font-medium transition-all active:scale-95"
-          >
-            <div className="flex items-center justify-center size-7 rounded-lg">
-              <LayoutGrid className="size-4.5" />
-            </div>
-            <span className="text-[10px] tracking-tight">Katalog</span>
           </button>
         </div>
       </nav>

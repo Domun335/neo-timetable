@@ -16,7 +16,7 @@ export function LessonCell({
 }) {
   if (!lessons || lessons.length === 0) {
     return (
-      <div className="h-full min-h-13 flex items-center justify-center text-muted-foreground/30 text-xs select-none">
+      <div className="h-full min-h-10 flex items-center justify-center text-muted-foreground/30 text-xs select-none">
         &mdash;
       </div>
     )
@@ -26,7 +26,7 @@ export function LessonCell({
 
   if (visibleLessons.length === 0) {
     return (
-      <div className="h-full min-h-13 flex items-center justify-center text-muted-foreground/30 text-xs select-none">
+      <div className="h-full min-h-10 flex items-center justify-center text-muted-foreground/30 text-xs select-none">
         &mdash;
       </div>
     )
@@ -45,15 +45,8 @@ export function LessonCell({
             return lesson.groupName
           })()
 
-          const badgeClass = (() => {
-            if (cat === 'wf') {
-              return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
-            }
-            if (cat === 'lang') {
-              return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30'
-            }
-            return 'bg-secondary text-secondary-foreground border-border/50'
-          })()
+          const badgeClass = 'bg-muted/80 text-foreground/80 border-border/70 hover:bg-muted font-medium'
+          const overrideClass = 'bg-primary/10 text-primary border-primary/30 font-semibold'
 
           return (
             <div
@@ -97,8 +90,8 @@ export function LessonCell({
                               : `Kliknij, aby wybrać Grupę ${lesson.groupNum} dla: ${lesson.subject}`
                           }
                           className={cn(
-                            'shrink-0 font-mono text-[11px] px-2 py-0.5 h-5 font-semibold rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
-                            badgeClass,
+                            'shrink-0 font-mono text-[11px] px-2 py-0.5 h-5 rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
+                            isOverriddenThis ? overrideClass : badgeClass,
                           )}
                         >
                           {badgeLabel}
@@ -109,7 +102,7 @@ export function LessonCell({
                     <Badge
                       variant="outline"
                       className={cn(
-                        'shrink-0 font-mono text-[11px] px-2 py-0.5 h-5 font-semibold rounded-md',
+                        'shrink-0 font-mono text-[11px] px-2 py-0.5 h-5 rounded-md',
                         badgeClass,
                       )}
                     >
@@ -118,38 +111,42 @@ export function LessonCell({
                   ))}
               </div>
 
-              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
-                {lesson.teacher &&
-                  currentType !== 'n' &&
-                  (lesson.teacherId ? (
-                    <Link
-                      href={`/n/${lesson.teacherId}`}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all text-xs font-semibold"
-                    >
-                      <User className="size-3 shrink-0" />
-                      <span>{lesson.teacher}</span>
-                    </Link>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-muted text-foreground/80 text-xs font-medium">
-                      <User className="size-3 shrink-0" />
-                      <span>{lesson.teacher}</span>
-                    </span>
-                  ))}
-
+              <div className="flex items-center gap-2 flex-wrap pt-0.5 text-xs text-muted-foreground">
                 {lesson.room &&
                   currentType !== 's' &&
                   (lesson.roomId ? (
                     <Link
                       href={`/s/${lesson.roomId}`}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted text-muted-foreground hover:text-foreground active:scale-95 transition-all text-xs font-mono font-medium hover:bg-accent"
+                      className="inline-flex items-center gap-1 font-semibold text-foreground/90 hover:text-primary transition-colors"
                     >
-                      <DoorOpen className="size-3 shrink-0 text-muted-foreground" />
-                      <span>s. {lesson.room}</span>
+                      <DoorOpen className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span>sala {lesson.room}</span>
                     </Link>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-muted/60 text-muted-foreground text-xs font-mono">
-                      <DoorOpen className="size-3 shrink-0" />
-                      <span>s. {lesson.room}</span>
+                    <span className="inline-flex items-center gap-1 font-medium text-foreground/75">
+                      <DoorOpen className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span>sala {lesson.room}</span>
+                    </span>
+                  ))}
+
+                {lesson.room && lesson.teacher && currentType !== 'n' && currentType !== 's' && (
+                  <span className="text-muted-foreground/40 font-light">&bull;</span>
+                )}
+
+                {lesson.teacher &&
+                  currentType !== 'n' &&
+                  (lesson.teacherId ? (
+                    <Link
+                      href={`/n/${lesson.teacherId}`}
+                      className="inline-flex items-center gap-1 hover:text-primary transition-colors text-muted-foreground hover:underline"
+                    >
+                      <User className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span>{lesson.teacher}</span>
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-muted-foreground">
+                      <User className="size-3.5 shrink-0 text-muted-foreground" />
+                      <span>{lesson.teacher}</span>
                     </span>
                   ))}
 
@@ -158,14 +155,14 @@ export function LessonCell({
                   (lesson.classId ? (
                     <Link
                       href={`/o/${lesson.classId}`}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all text-xs font-bold"
+                      className="inline-flex items-center gap-1 font-bold text-primary hover:underline transition-colors"
                     >
-                      <GraduationCap className="size-3 shrink-0" />
+                      <GraduationCap className="size-3.5 shrink-0" />
                       <span>{lesson.className}</span>
                     </Link>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-muted text-foreground font-bold text-xs">
-                      <GraduationCap className="size-3 shrink-0" />
+                    <span className="inline-flex items-center gap-1 font-bold text-foreground">
+                      <GraduationCap className="size-3.5 shrink-0" />
                       <span>{lesson.className}</span>
                     </span>
                   ))}
@@ -178,8 +175,9 @@ export function LessonCell({
   }
 
   return (
-    <div className="flex flex-col gap-1.5 h-full justify-start p-1">
+    <div className="flex flex-col gap-1 h-full justify-start p-0.5">
       {visibleLessons.map((lesson, idx) => {
+        const isMulti = visibleLessons.length > 1
         const hasGroup = Boolean(lesson.groupName || lesson.groupNum)
         const teacherTooltip = lesson.teacherName
           ? `Nauczyciel: ${lesson.teacherName}`
@@ -195,35 +193,23 @@ export function LessonCell({
           return lesson.groupName
         })()
 
-        const badgeClass = (() => {
-          if (cat === 'wf') {
-            return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
-          }
-          if (cat === 'lang') {
-            return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30'
-          }
-          return 'bg-secondary text-secondary-foreground border-border/40'
-        })()
+        const badgeClass = 'bg-muted/80 text-foreground/80 border-border/60 hover:bg-muted font-medium'
+        const overrideClass = 'bg-primary/10 text-primary border-primary/30 font-semibold'
 
         return (
           <div
             key={idx}
             className={cn(
-              'flex rounded-xl border border-border/70 bg-card/85 shadow-2xs transition-all duration-150 hover:shadow-xs hover:border-primary/50',
-              visibleLessons.length > 1
-                ? 'flex-wrap items-center gap-x-1.5 gap-y-1 px-2.5 py-1.5'
-                : 'flex-col gap-1 px-3.5 py-2.5',
+              'flex flex-col rounded-lg border border-border/70 bg-card/85 shadow-2xs transition-all duration-150 hover:shadow-xs hover:border-primary/50',
+              isMulti ? 'gap-0.5 p-1.5' : 'gap-0.5 px-2.5 py-1.5',
             )}
           >
-            <div
-              className={
-                visibleLessons.length > 1 ? 'contents' : 'flex items-start justify-between gap-1'
-              }
-            >
+            <div className="flex items-center justify-between gap-1 min-w-0">
               <span
+                title={lesson.subject}
                 className={cn(
-                  'font-bold text-xs text-foreground leading-snug',
-                  visibleLessons.length > 1 ? 'line-clamp-1' : 'line-clamp-2',
+                  'font-bold text-foreground leading-tight truncate',
+                  isMulti ? 'text-[11px]' : 'text-xs',
                 )}
               >
                 {lesson.subject}
@@ -255,8 +241,8 @@ export function LessonCell({
                                 }
                               }}
                               className={cn(
-                                'shrink-0 font-mono text-[10px] px-1.5 py-0 h-4.5 font-medium rounded-md border transition-all cursor-pointer hover:scale-105 active:scale-95',
-                                badgeClass,
+                                'shrink-0 font-mono text-[9px] px-1 py-0 h-4 font-medium rounded border transition-all cursor-pointer hover:scale-105 active:scale-95',
+                                isOverriddenThis ? overrideClass : badgeClass,
                               )}
                             >
                               {badgeLabel}
@@ -274,10 +260,7 @@ export function LessonCell({
                 ) : (
                   <Badge
                     variant="outline"
-                    className={cn(
-                      'shrink-0 font-mono text-[10px] px-1.5 py-0 h-4.5 font-medium',
-                      badgeClass,
-                    )}
+                    className="shrink-0 font-mono text-[9px] px-1 py-0 h-4 font-medium"
                   >
                     {badgeLabel}
                   </Badge>
@@ -286,10 +269,8 @@ export function LessonCell({
 
             <div
               className={cn(
-                'text-[11px] text-muted-foreground',
-                visibleLessons.length > 1
-                  ? 'contents'
-                  : 'flex items-center gap-1.5 flex-wrap pt-0.5',
+                'text-muted-foreground flex items-center gap-1.5 flex-wrap leading-tight',
+                isMulti ? 'text-[10px]' : 'text-[11px]',
               )}
             >
               {lesson.teacher &&
@@ -300,7 +281,7 @@ export function LessonCell({
                       render={
                         <Link
                           href={`/n/${lesson.teacherId}`}
-                          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
+                          className="inline-flex items-center gap-0.5 px-1 py-0.25 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
                         >
                           <span>{lesson.teacher}</span>
                         </Link>
@@ -320,7 +301,7 @@ export function LessonCell({
                       render={
                         <Link
                           href={`/s/${lesson.roomId}`}
-                          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground font-mono font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="inline-flex items-center gap-0.5 px-1 py-0.25 rounded bg-muted text-muted-foreground font-mono font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
                         >
                           <span>{lesson.room}</span>
                         </Link>
@@ -340,7 +321,7 @@ export function LessonCell({
                       render={
                         <Link
                           href={`/o/${lesson.classId}`}
-                          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-primary/10 text-primary font-bold hover:bg-primary/20 transition-colors"
+                          className="inline-flex items-center gap-0.5 px-1 py-0.25 rounded bg-primary/10 text-primary font-bold hover:bg-primary/20 transition-colors"
                         >
                           <span>{lesson.className}</span>
                         </Link>

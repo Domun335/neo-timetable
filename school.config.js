@@ -6,8 +6,8 @@ export const schoolConfig = {
   semester: 'Semestr 1',
 
   branding: {
-    primaryColor: '#0284c7',
-    accentColor: '#38bdf8',
+    primaryColor: '#2563eb',
+    accentColor: '#60a5fa',
   },
 
   meta: {

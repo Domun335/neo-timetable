@@ -215,7 +215,8 @@ export function calculateCurrentState({ hours, rawDays, selectedGroups, now = ne
 
   const formatNextDayText = () => {
     if (currentDayIndex === 4) {
-      const dayName = nextSchoolDay.dayIndex === 0 ? 'w poniedziałek' : POLISH_DAY_PREP[nextSchoolDay.dayIndex]
+      const dayName =
+        nextSchoolDay.dayIndex === 0 ? 'w poniedziałek' : POLISH_DAY_PREP[nextSchoolDay.dayIndex]
       return `Miłego weekendu! • ${dayName.charAt(0).toUpperCase() + dayName.slice(1)} od ${nextStartStr}`
     }
     if (nextSchoolDay.dayIndex === currentDayIndex + 1) {
@@ -227,7 +228,7 @@ export function calculateCurrentState({ hours, rawDays, selectedGroups, now = ne
 
   if (!todaySchedule.hasLessons) {
     const isTomorrow = nextSchoolDay.dayIndex === currentDayIndex + 1
-    const dayText = isTomorrow ? 'Jutro' : (POLISH_DAY_PREP[nextSchoolDay.dayIndex] || 'wkrótce')
+    const dayText = isTomorrow ? 'Jutro' : POLISH_DAY_PREP[nextSchoolDay.dayIndex] || 'wkrótce'
     return {
       isWeekend: false,
       currentDayIndex,
@@ -280,7 +281,9 @@ export function calculateCurrentState({ hours, rawDays, selectedGroups, now = ne
     }
   }
 
-  const currentSlot = slots.find((s) => currentMinutes >= s.startMinutes && currentMinutes < s.endMinutes)
+  const currentSlot = slots.find(
+    (s) => currentMinutes >= s.startMinutes && currentMinutes < s.endMinutes,
+  )
 
   if (currentSlot) {
     if (currentSlot.hasLesson) {

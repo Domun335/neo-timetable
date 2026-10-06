@@ -48,12 +48,12 @@ export const TimetableTable = memo(
     const sortedHourKeys = Object.keys(hours || {}).sort((a, b) => Number(a) - Number(b))
 
     return (
-      <div className="w-full overflow-hidden rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md shadow-sm print:overflow-visible print:shadow-none print:rounded-xl print:border-border">
+      <div className="w-full overflow-hidden rounded-2xl border border-border bg-card/60 backdrop-blur-md shadow-sm print:overflow-visible print:shadow-none print:rounded-xl print:border-border">
         <div className="overflow-x-auto print:overflow-visible">
           <table className="w-full border-collapse text-left min-w-210 print:min-w-0 table-fixed">
             <thead>
-              <tr className="border-b border-border/80 bg-muted/40 print:bg-muted/20">
-                <th className="w-20 lg:w-24 p-3 text-xs font-bold uppercase tracking-wider text-muted-foreground text-center print:p-2 print:text-[11px] shrink-0">
+              <tr className="border-b border-border bg-muted/40 print:bg-muted/20">
+                <th className="w-20 lg:w-24 p-3 text-xs font-bold uppercase tracking-wider text-muted-foreground text-center border-r border-border print:p-2 print:text-[11px] shrink-0">
                   Godz.
                 </th>
                 {dayNames.map((dayName, dayIndex) => {
@@ -63,10 +63,10 @@ export const TimetableTable = memo(
                   return (
                     <th
                       key={dayIndex}
-                      className={`w-[19%] p-3 text-xs font-bold uppercase tracking-wider transition-colors print:p-2 print:text-[11px] ${
+                      className={`w-[19%] p-3 text-xs font-bold uppercase tracking-wider transition-colors border-r border-border/70 last:border-r-0 border-b print:p-2 print:text-[11px] ${
                         isToday
-                          ? 'bg-primary/10 text-primary border-b-2 border-primary print:bg-transparent print:text-foreground print:border-b-foreground/20'
-                          : 'text-foreground/80'
+                          ? 'bg-primary/10 text-primary border-b-2 border-b-primary print:bg-transparent print:text-foreground print:border-b-foreground/20'
+                          : 'border-b-border text-foreground/80'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-1">
@@ -74,7 +74,7 @@ export const TimetableTable = memo(
                         {isToday && (
                           <Badge
                             variant="default"
-                            className="no-print text-[10px] font-mono px-1.5 py-0 h-4.5 rounded-full shrink-0"
+                            className="no-print text-[10px] text-white font-mono px-1.5 py-0 h-4.5 rounded-full shrink-0"
                           >
                             Dziś
                           </Badge>
@@ -86,7 +86,7 @@ export const TimetableTable = memo(
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-border/60">
+            <tbody className="divide-y divide-border/85">
               {sortedHourKeys.map((hourKey, hourIndex) => {
                 const hourObj = hours[hourKey]
                 const isCurrentPeriod =
@@ -98,10 +98,10 @@ export const TimetableTable = memo(
                     className={`transition-colors ${
                       isCurrentPeriod
                         ? 'bg-primary/5 hover:bg-primary/10 ring-1 ring-inset ring-primary/40 print:bg-transparent print:ring-0'
-                        : 'hover:bg-muted/30'
+                        : 'even:bg-muted/15 hover:bg-muted/30'
                     }`}
                   >
-                    <td className="p-2.5 lg:p-3 text-center align-middle border-r border-border/60 bg-muted/20 shrink-0 print:p-1.5">
+                    <td className="p-2.5 lg:p-3 text-center align-middle border-r border-border bg-muted/20 shrink-0 print:p-1.5">
                       <div className="flex flex-col items-center justify-center gap-0.5">
                         <div className="flex items-center gap-1.5 mb-0.5">
                           <span
@@ -138,7 +138,7 @@ export const TimetableTable = memo(
                       return (
                         <td
                           key={dayIndex}
-                          className={`p-1.5 align-top border-r border-border/40 last:border-r-0 print:p-1 ${
+                          className={`p-1.5 align-top border-r border-border/70 last:border-r-0 print:p-1 ${
                             isToday && isCurrentPeriod
                               ? 'bg-primary/10 ring-2 ring-primary ring-inset rounded-lg print:ring-0 print:bg-transparent'
                               : isToday
