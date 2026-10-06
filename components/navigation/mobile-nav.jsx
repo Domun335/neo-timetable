@@ -285,10 +285,10 @@ export function MobileNav({ listData, timetableUrl }) {
 
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <SheetContent
-          side="left"
+          side="right"
           className="w-[88%] max-w-xs p-4 flex flex-col gap-0 h-full overflow-hidden"
         >
-          <SheetHeader className="p-0 pb-3 border-b border-border/60 shrink-0">
+          <SheetHeader className="p-0 pb-3 border-b border-border/60 shrink-0 pr-8">
             <SheetTitle className="flex items-center gap-2.5 text-sm font-bold text-foreground">
               <div className="size-7 rounded-lg overflow-hidden ring-1 ring-border/50 bg-muted/40 p-0.5">
                 <Image
