@@ -22,25 +22,24 @@ export default function HomePage() {
   useEffect(() => {
     if (!isLoaded || hasRedirected.current) return
 
-    const lastPath = getLastPath()
+    let target = '/o/1'
     if (typeof lastPath === 'string' && /^\/(o|n|s)\/\d+$/.test(lastPath)) {
-      hasRedirected.current = true
-      router.replace(lastPath)
-      return
-    }
-
-    if (favorites && favorites.length > 0) {
+      target = lastPath
+    } else if (favorites && favorites.length > 0) {
       const firstFav = favorites[0]
       if (['o', 'n', 's'].includes(firstFav?.type) && /^\d+$/.test(String(firstFav?.id))) {
-        hasRedirected.current = true
-        router.replace(`/${firstFav.type}/${firstFav.id}`)
-        return
+        target = `/${firstFav.type}/${firstFav.id}`
       }
     }
 
     hasRedirected.current = true
-    router.replace('/o/1')
-  }, [isLoaded, getLastPath, favorites, router])
+
+    if (typeof window !== 'undefined' && (!navigator.onLine || !isOnline)) {
+      window.location.replace(target)
+    } else {
+      router.replace(target)
+    }
+  }, [isLoaded, getLastPath, favorites, router, isOnline])
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">

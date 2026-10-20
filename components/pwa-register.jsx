@@ -27,6 +27,7 @@ export function PwaRegister() {
       .register('/sw.js')
       .then((reg) => {
         console.log('[PWA] Service Worker zarejestrowany:', reg.scope)
+        reg.update().catch(() => {})
       })
       .catch((err) => {
         console.warn('[PWA] Błąd rejestracji Service Workera:', err)
