@@ -11,6 +11,7 @@ import { PrintThemeHandler } from '@/components/print-theme-handler'
 import { OfflineBanner } from '@/components/offline-banner'
 import { fetchTimetableList } from '@/lib/timetable/fetch-list.js'
 import { schoolConfig } from '@/school.config'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -50,6 +51,8 @@ export default async function RootLayout({ children }) {
     console.error('Błąd pobierania listy jednostek:', error)
   }
 
+  const gaId = schoolConfig.analyticsId || process.env.NEXT_PUBLIC_GA_ID
+
   return (
     <html lang="pl" suppressHydrationWarning className="h-full">
       <body
@@ -77,6 +80,7 @@ export default async function RootLayout({ children }) {
           </TooltipProvider>
         </ThemeProvider>
       </body>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   )
 }
