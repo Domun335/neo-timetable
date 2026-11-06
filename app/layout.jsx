@@ -51,7 +51,7 @@ export default async function RootLayout({ children }) {
     console.error('Błąd pobierania listy jednostek:', error)
   }
 
-  const gaId = schoolConfig.analyticsId || process.env.NEXT_PUBLIC_GA_ID
+  const gaId = schoolConfig.analyticsId || process.env.GA_ID
 
   return (
     <html lang="pl" suppressHydrationWarning className="h-full">
